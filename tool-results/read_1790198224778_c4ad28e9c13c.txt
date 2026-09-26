@@ -1,0 +1,1152 @@
+     1→// Loja Lenora — Admin Products.
+     2→// Lista produtos + editor completo (Sheet grande à direita) com upload de
+     3→// imagens (converte para WebP no servidor), cores, tamanhos, etc.
+     4→'use client'
+     5→import { useEffect, useMemo, useState } from 'react'
+     6→import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+     7→import {
+     8→  Plus,
+     9→  Pencil,
+    10→  Trash2,
+    11→  Star,
+    12→  ImagePlus,
+    13→  Loader2,
+    14→  X,
+    15→  ChevronUp,
+    16→  ChevronDown,
+    17→  Upload,
+    18→  Save,
+    19→  Folder,
+    20→  Check,
+    21→} from 'lucide-react'
+    22→import { toast } from 'sonner'
+    23→import type { SiteSettings } from '@/lib/settings'
+    24→import { formatBRL, slugify } from '@/lib/utils-lenora'
+    25→import { Button } from '@/components/ui/button'
+    26→import { Input } from '@/components/ui/input'
+    27→import { Label } from '@/components/ui/label'
+    28→import { Textarea } from '@/components/ui/textarea'
+    29→import { Switch } from '@/components/ui/switch'
+    30→import { Badge } from '@/components/ui/badge'
+    31→import {
+    32→  Select,
+    33→  SelectContent,
+    34→  SelectItem,
+    35→  SelectTrigger,
+    36→  SelectValue,
+    37→} from '@/components/ui/select'
+    38→import {
+    39→  Sheet,
+    40→  SheetContent,
+    41→  SheetHeader,
+    42→  SheetTitle,
+    43→  SheetDescription,
+    44→} from '@/components/ui/sheet'
+    45→import { Skeleton } from '@/components/ui/skeleton'
+    46→import {
+    47→  AlertDialog,
+    48→  AlertDialogAction,
+    49→  AlertDialogCancel,
+    50→  AlertDialogContent,
+    51→  AlertDialogDescription,
+    52→  AlertDialogFooter,
+    53→  AlertDialogHeader,
+    54→  AlertDialogTitle,
+    55→} from '@/components/ui/alert-dialog'
+    56→
+    57→type Category = {
+    58→  id: string
+    59→  name: string
+    60→  slug: string
+    61→  productCount?: number
+    62→  active?: boolean
+    63→}
+    64→
+    65→type ProductRow = {
+    66→  id: string
+    67→  name: string
+    68→  slug: string
+    69→  status: string
+    70→  price: number
+    71→  compareAt?: number | null
+    72→  featured: boolean
+    73→  sku?: string | null
+    74→  tags?: string | null
+    75→  description: string
+    76→  categoryId: string
+    77→  category?: { name: string; slug: string }
+    78→  _count?: { images: number; colors: number; sizes: number }
+    79→  images?: { id: string; url: string; isMain: boolean; order: number }[]
+    80→  colors?: { id: string; name: string; hex: string; stock: number }[]
+    81→  sizes?: { id: string; name: string; stock: number }[]
+    82→  createdAt?: string
+    83→}
+    84→
+    85→type ImageDraft = { url: string; isMain: boolean; order: number }
+    86→type ColorDraft = { name: string; hex: string; stock: number }
+    87→type SizeDraft = { name: string; stock: number }
+    88→
+    89→type ProductForm = {
+    90→  name: string
+    91→  slug: string
+    92→  description: string
+    93→  price: string
+    94→  compareAt: string
+    95→  sku: string
+    96→  status: 'active' | 'draft' | 'archived'
+    97→  featured: boolean
+    98→  categoryId: string
+    99→  tags: string
+   100→  images: ImageDraft[]
+   101→  colors: ColorDraft[]
+   102→  sizes: SizeDraft[]
+   103→}
+   104→
+   105→const EMPTY_FORM: ProductForm = {
+   106→  name: '',
+   107→  slug: '',
+   108→  description: '',
+   109→  price: '',
+   110→  compareAt: '',
+   111→  sku: '',
+   112→  status: 'active',
+   113→  featured: false,
+   114→  categoryId: '',
+   115→  tags: '',
+   116→  images: [],
+   117→  colors: [],
+   118→  sizes: [],
+   119→}
+   120→
+   121→const STATUS_LABELS: Record<string, string> = {
+   122→  active: 'Ativo',
+   123→  draft: 'Rascunho',
+   124→  archived: 'Arquivado',
+   125→}
+   126→
+   127→const STATUS_COLORS: Record<string, string> = {
+   128→  active: 'bg-emerald-100 text-emerald-900',
+   129→  draft: 'bg-amber-100 text-amber-900',
+   130→  archived: 'bg-rose-100 text-rose-900',
+   131→}
+   132→
+   133→export function AdminProducts({ settings }: { settings: SiteSettings }) {
+   134→  const qc = useQueryClient()
+   135→  const [open, setOpen] = useState(false)
+   136→  const [editId, setEditId] = useState<string | null>(null)
+   137→  const [form, setForm] = useState<ProductForm>(EMPTY_FORM)
+   138→  const [deleteId, setDeleteId] = useState<string | null>(null)
+   139→  const [deleteName, setDeleteName] = useState('')
+   140→  const [search, setSearch] = useState('')
+   141→
+   142→  // Lista de produtos (admin)
+   143→  const productsQuery = useQuery<{ items: ProductRow[] }>({
+   144→    queryKey: ['admin', 'products'],
+   145→    queryFn: () =>
+   146→      fetch('/api/admin/products', { cache: 'no-store' }).then((r) =>
+   147→        r.ok ? r.json() : Promise.reject(new Error('products')),
+   148→      ),
+   149→    staleTime: 15_000,
+   150→  })
+   151→
+   152→  // Lista de categorias (admin) — inclui inativas
+   153→  const categoriesQuery = useQuery<{ items: Category[] }>({
+   154→    queryKey: ['admin', 'categories'],
+   155→    queryFn: () =>
+   156→      fetch('/api/admin/categories', { cache: 'no-store' }).then((r) =>
+   157→        r.ok ? r.json() : Promise.reject(new Error('categories')),
+   158→      ),
+   159→    staleTime: 30_000,
+   160→  })
+   161→
+   162→  const categories = categoriesQuery.data?.items ?? []
+   163→
+   164→  // Mutation salvar
+   165→  const saveMutation = useMutation({
+   166→    mutationFn: async () => {
+   167→      const body = {
+   168→        name: form.name.trim(),
+   169→        description: form.description.trim(),
+   170→        price: Number(form.price) || 0,
+   171→        compareAt: form.compareAt ? Number(form.compareAt) : null,
+   172→        sku: form.sku.trim() || null,
+   173→        status: form.status,
+   174→        featured: form.featured,
+   175→        categoryId: form.categoryId,
+   176→        tags: form.tags.trim() || null,
+   177→        images: form.images.map((im, i) => ({
+   178→          url: im.url,
+   179→          isMain: i === 0 ? true : im.isMain,
+   180→          order: i,
+   181→        })),
+   182→        colors: form.colors
+   183→          .filter((c) => c.name.trim() && c.hex)
+   184→          .map((c) => ({
+   185→            name: c.name.trim(),
+   186→            hex: c.hex,
+   187→            stock: Number(c.stock) || 0,
+   188→          })),
+   189→        sizes: form.sizes
+   190→          .filter((s) => s.name.trim())
+   191→          .map((s) => ({
+   192→            name: s.name.trim(),
+   193→            stock: Number(s.stock) || 0,
+   194→          })),
+   195→      }
+   196→      const url = editId
+   197→        ? `/api/admin/products/${editId}`
+   198→        : '/api/admin/products'
+   199→      const method = editId ? 'PUT' : 'POST'
+   200→      const r = await fetch(url, {
+   201→        method,
+   202→        headers: { 'content-type': 'application/json' },
+   203→        body: JSON.stringify(body),
+   204→      })
+   205→      const data = await r.json()
+   206→      if (!r.ok) throw new Error(data?.error ?? 'Falha ao salvar')
+   207→      return data
+   208→    },
+   209→    onSuccess: () => {
+   210→      toast.success(editId ? 'Produto atualizado ✨' : 'Produto criado ✨')
+   211→      qc.invalidateQueries({ queryKey: ['admin', 'products'] })
+   212→      setOpen(false)
+   213→    },
+   214→    onError: (e: Error) => toast.error(e.message),
+   215→  })
+   216→
+   217→  // Mutation delete
+   218→  const deleteMutation = useMutation({
+   219→    mutationFn: async (id: string) => {
+   220→      const r = await fetch(`/api/admin/products/${id}`, {
+   221→        method: 'DELETE',
+   222→      })
+   223→      const data = await r.json()
+   224→      if (!r.ok) throw new Error(data?.error ?? 'Falha ao excluir')
+   225→      return data
+   226→    },
+   227→    onSuccess: () => {
+   228→      toast.success('Produto excluído.')
+   229→      setDeleteId(null)
+   230→      qc.invalidateQueries({ queryKey: ['admin', 'products'] })
+   231→    },
+   232→    onError: (e: Error) => toast.error(e.message),
+   233→  })
+   234→
+   235→  // Abrir editor para NOVO
+   236→  function newProduct() {
+   237→    setEditId(null)
+   238→    setForm({
+   239→      ...EMPTY_FORM,
+   240→      categoryId: categories[0]?.id ?? '',
+   241→    })
+   242→    setOpen(true)
+   243→  }
+   244→
+   245→  // Abrir editor para EDITAR — busca detalhes via /api/products/[slug]
+   246→  async function editProduct(p: ProductRow) {
+   247→    setEditId(p.id)
+   248→    setForm({
+   249→      name: p.name ?? '',
+   250→      slug: p.slug ?? '',
+   251→      description: p.description ?? '',
+   252→      price: String(p.price ?? ''),
+   253→      compareAt: p.compareAt != null ? String(p.compareAt) : '',
+   254→      sku: p.sku ?? '',
+   255→      status: (p.status as ProductForm['status']) ?? 'active',
+   256→      featured: !!p.featured,
+   257→      categoryId: p.categoryId,
+   258→      tags: p.tags ?? '',
+   259→      images: (p.images ?? []).map((i) => ({
+   260→        url: i.url,
+   261→        isMain: i.isMain,
+   262→        order: i.order,
+   263→      })),
+   264→      colors: (p.colors ?? []).map((c) => ({
+   265→        name: c.name,
+   266→        hex: c.hex,
+   267→        stock: c.stock,
+   268→      })),
+   269→      sizes: (p.sizes ?? []).map((s) => ({
+   270→        name: s.name,
+   271→        stock: s.stock,
+   272→      })),
+   273→    })
+   274→    // Se não vieram images/colors/sizes do list, busca o detalhe público:
+   275→    if (!p.images && !p.colors && !p.sizes) {
+   276→      try {
+   277→        const r = await fetch(`/api/products/${p.slug}`, {
+   278→          cache: 'no-store',
+   279→        })
+   280→        if (r.ok) {
+   281→          const data = await r.json()
+   282→          const prod = data.product
+   283→          if (prod) {
+   284→            setForm((f) => ({
+   285→              ...f,
+   286→              description: prod.description ?? f.description,
+   287→              images: (prod.images ?? []).map((i: any) => ({
+   288→                url: i.url,
+   289→                isMain: i.isMain,
+   290→                order: i.order ?? 0,
+   291→              })),
+   292→              colors: (prod.colors ?? []).map((c: any) => ({
+   293→                name: c.name,
+   294→                hex: c.hex,
+   295→                stock: c.stock ?? 0,
+   296→              })),
+   297→              sizes: (prod.sizes ?? []).map((s: any) => ({
+   298→                name: s.name,
+   299→                stock: s.stock ?? 0,
+   300→              })),
+   301→            }))
+   302→          }
+   303→        }
+   304→      } catch {
+   305→        /* ignore */
+   306→      }
+   307→    }
+   308→    setOpen(true)
+   309→  }
+   310→
+   311→  const filtered = useMemo(() => {
+   312→    const list = productsQuery.data?.items ?? []
+   313→    if (!search.trim()) return list
+   314→    const q = search.trim().toLowerCase()
+   315→    return list.filter(
+   316→      (p) =>
+   317→        p.name.toLowerCase().includes(q) ||
+   318→        p.slug.toLowerCase().includes(q) ||
+   319→        p.sku?.toLowerCase().includes(q),
+   320→    )
+   321→  }, [productsQuery.data, search])
+   322→
+   323→  return (
+   324→    <div className="space-y-5">
+   325→      {/* HEADER */}
+   326→      <div className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
+   327→        <div>
+   328→          <p className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
+   329→            Catálogo
+   330→          </p>
+   331→          <h2 className="font-serif text-2xl">Produtos</h2>
+   332→        </div>
+   333→        <div className="flex w-full items-center gap-2 sm:w-auto">
+   334→          <Input
+   335→            value={search}
+   336→            onChange={(e) => setSearch(e.target.value)}
+   337→            placeholder="Buscar por nome, slug ou SKU…"
+   338→            className="h-10 sm:w-64"
+   339→          />
+   340→          <Button
+   341→            onClick={newProduct}
+   342→            className="btn-gold h-10 gap-2 border-0 px-4 text-xs uppercase tracking-[0.2em] hover:brightness-110"
+   343→          >
+   344→            <Plus className="size-4" />
+   345→            Novo
+   346→          </Button>
+   347→        </div>
+   348→      </div>
+   349→
+   350→      {/* TABLE */}
+   351→      <div className="rounded-lg border border-border bg-surface">
+   352→        {productsQuery.isLoading ? (
+   353→          <div className="space-y-2 p-4">
+   354→            {Array.from({ length: 5 }).map((_, i) => (
+   355→              <Skeleton key={i} className="h-14 w-full" />
+   356→            ))}
+   357→          </div>
+   358→        ) : filtered.length === 0 ? (
+   359→          <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
+   360→            <Folder className="size-10 text-muted-foreground/60" />
+   361→            <p className="text-sm text-muted-foreground">
+   362→              {search.trim()
+   363→                ? 'Nenhum produto encontrado para a busca.'
+   364→                : 'Ainda não há produtos cadastrados.'}
+   365→            </p>
+   366→            <Button
+   367→              onClick={newProduct}
+   368→              className="btn-gold mt-1 h-10 gap-2 border-0 text-xs uppercase tracking-[0.2em]"
+   369→            >
+   370→              <Plus className="size-4" />
+   371→              Criar primeiro produto
+   372→            </Button>
+   373→          </div>
+   374→        ) : (
+   375→          <div className="overflow-x-auto">
+   376→            <table className="w-full text-sm">
+   377→              <thead>
+   378→                <tr className="border-b border-border text-left text-[11px] uppercase tracking-wider text-muted-foreground">
+   379→                  <th className="py-3 pl-4 pr-3">Produto</th>
+   380→                  <th className="px-3 py-3 hidden md:table-cell">Categoria</th>
+   381→                  <th className="px-3 py-3">Preço</th>
+   382→                  <th className="px-3 py-3">Status</th>
+   383→                  <th className="px-3 py-3 hidden sm:table-cell">Estoque</th>
+   384→                  <th className="px-3 py-3 text-right">Ações</th>
+   385→                </tr>
+   386→              </thead>
+   387→              <tbody>
+   388→                {filtered.map((p) => {
+   389→                  const img = p.images?.[0]?.url
+   390→                    ? `${p.images[0].url}`
+   391→                    : null
+   392→                  return (
+   393→                    <tr
+   394→                      key={p.id}
+   395→                      className="border-b border-border last:border-0 hover:bg-muted/40"
+   396→                    >
+   397→                      <td className="py-3 pl-4 pr-3">
+   398→                        <div className="flex items-center gap-3">
+   399→                          <div className="grid size-12 shrink-0 place-items-center overflow-hidden rounded-md border border-border bg-muted">
+   400→                            {img ? (
+   401→                              <img
+   402→                                src={img}
+   403→                                alt={p.name}
+   404→                                className="size-full object-cover"
+   405→                              />
+   406→                            ) : (
+   407→                              <ImagePlus className="size-4 text-muted-foreground" />
+   408→                            )}
+   409→                          </div>
+   410→                          <div className="min-w-0">
+   411→                            <p className="truncate font-medium text-foreground">
+   412→                              {p.name}
+   413→                            </p>
+   414→                            <p className="truncate text-[11px] text-muted-foreground">
+   415→                              {p.slug}
+   416→                              {p.sku ? ` · ${p.sku}` : ''}
+   417→                            </p>
+   418→                            {p.featured && (
+   419→                              <span className="mt-0.5 inline-flex items-center gap-1 text-[10px] uppercase tracking-wider text-accent">
+   420→                                <Star className="size-3 fill-accent" />
+   421→                                Destaque
+   422→                              </span>
+   423→                            )}
+   424→                          </div>
+   425→                        </div>
+   426→                      </td>
+   427→                      <td className="px-3 py-3 hidden md:table-cell">
+   428→                        <span className="text-xs text-muted-foreground">
+   429→                          {p.category?.name ?? '—'}
+   430→                        </span>
+   431→                      </td>
+   432→                      <td className="px-3 py-3">
+   433→                        <p className="font-medium">{formatBRL(p.price)}</p>
+   434→                        {p.compareAt ? (
+   435→                          <p className="text-[11px] text-muted-foreground line-through">
+   436→                            {formatBRL(p.compareAt)}
+   437→                          </p>
+   438→                        ) : null}
+   439→                      </td>
+   440→                      <td className="px-3 py-3">
+   441→                        <span
+   442→                          className={`inline-flex rounded px-2 py-1 text-[10px] uppercase tracking-wider ${STATUS_COLORS[p.status] ?? 'bg-muted'}`}
+   443→                        >
+   444→                          {STATUS_LABELS[p.status] ?? p.status}
+   445→                        </span>
+   446→                      </td>
+   447→                      <td className="px-3 py-3 hidden sm:table-cell text-xs text-muted-foreground">
+   448→                        {p._count?.colors ?? 0} cores · {p._count?.sizes ?? 0}{' '}
+   449→                        tamanhos
+   450→                      </td>
+   451→                      <td className="px-3 py-3">
+   452→                        <div className="flex items-center justify-end gap-1">
+   453→                          <button
+   454→                            onClick={() => editProduct(p)}
+   455→                            aria-label="Editar"
+   456→                            className="grid size-9 place-items-center rounded-md text-foreground hover:bg-muted"
+   457→                          >
+   458→                            <Pencil className="size-4" />
+   459→                          </button>
+   460→                          <button
+   461→                            onClick={() => {
+   462→                              setDeleteId(p.id)
+   463→                              setDeleteName(p.name)
+   464→                            }}
+   465→                            aria-label="Excluir"
+   466→                            className="grid size-9 place-items-center rounded-md text-destructive hover:bg-destructive/10"
+   467→                          >
+   468→                            <Trash2 className="size-4" />
+   469→                          </button>
+   470→                        </div>
+   471→                      </td>
+   472→                    </tr>
+   473→                  )
+   474→                })}
+   475→              </tbody>
+   476→            </table>
+   477→          </div>
+   478→        )}
+   479→      </div>
+   480→
+   481→      {/* EDITOR SHEET */}
+   482→      <Sheet open={open} onOpenChange={setOpen}>
+   483→        <SheetContent
+   484→          side="right"
+   485→          className="flex w-full flex-col gap-0 bg-background p-0 sm:max-w-2xl lg:max-w-3xl"
+   486→        >
+   487→          <SheetHeader className="flex flex-row items-center justify-between border-b border-border p-5">
+   488→            <div>
+   489→              <SheetTitle className="font-serif text-2xl">
+   490→                {editId ? 'Editar produto' : 'Novo produto'}
+   491→              </SheetTitle>
+   492→              <SheetDescription className="text-xs">
+   493→                {editId
+   494→                  ? 'Atualize os campos abaixo e salve.'
+   495→                  : 'Preencha os campos e crie um novo item no catálogo.'}
+   496→              </SheetDescription>
+   497→            </div>
+   498→          </SheetHeader>
+   499→
+   500→          <div className="flex-1 overflow-y-auto p-5">
+   501→            <ProductEditor
+   502→              form={form}
+   503→              setForm={setForm}
+   504→              categories={categories}
+   505→            />
+   506→          </div>
+   507→
+   508→          <div className="flex items-center justify-end gap-3 border-t border-border bg-surface p-5">
+   509→            <Button
+   510→              variant="outline"
+   511→              onClick={() => setOpen(false)}
+   512→              className="h-11 px-6 text-xs uppercase tracking-[0.2em]"
+   513→            >
+   514→              Cancelar
+   515→            </Button>
+   516→            <Button
+   517→              onClick={() => saveMutation.mutate()}
+   518→              disabled={
+   519→                saveMutation.isPending ||
+   520→                !form.name.trim() ||
+   521→                !form.categoryId ||
+   522→                !form.price
+   523→              }
+   524→              className="btn-gold h-11 gap-2 border-0 px-6 text-xs uppercase tracking-[0.2em] disabled:opacity-50"
+   525→            >
+   526→              {saveMutation.isPending ? (
+   527→                <Loader2 className="size-4 animate-spin" />
+   528→              ) : (
+   529→                <Save className="size-4" />
+   530→              )}
+   531→              {editId ? 'Salvar alterações' : 'Criar produto'}
+   532→            </Button>
+   533→          </div>
+   534→        </SheetContent>
+   535→      </Sheet>
+   536→
+   537→      {/* DELETE CONFIRM */}
+   538→      <AlertDialog
+   539→        open={!!deleteId}
+   540→        onOpenChange={(o) => !o && setDeleteId(null)}
+   541→      >
+   542→        <AlertDialogContent>
+   543→          <AlertDialogHeader>
+   544→            <AlertDialogTitle>Excluir produto?</AlertDialogTitle>
+   545→            <AlertDialogDescription>
+   546→              Tem certeza que deseja remover <b>{deleteName}</b> do catálogo?
+   547→              Esta ação não pode ser desfeita.
+   548→            </AlertDialogDescription>
+   549→          </AlertDialogHeader>
+   550→          <AlertDialogFooter>
+   551→            <AlertDialogCancel className="h-11">Cancelar</AlertDialogCancel>
+   552→            <AlertDialogAction
+   553→              onClick={() => deleteId && deleteMutation.mutate(deleteId)}
+   554→              className="h-11 bg-destructive text-white hover:bg-destructive/90"
+   555→            >
+   556→              {deleteMutation.isPending ? (
+   557→                <Loader2 className="size-4 animate-spin" />
+   558→              ) : (
+   559→                <Trash2 className="size-4" />
+   560→              )}
+   561→              Excluir
+   562→            </AlertDialogAction>
+   563→          </AlertDialogFooter>
+   564→        </AlertDialogContent>
+   565→      </AlertDialog>
+   566→    </div>
+   567→  )
+   568→}
+   569→
+   570→// ───────────────────────── PRODUCT EDITOR ─────────────────────────
+   571→function ProductEditor({
+   572→  form,
+   573→  setForm,
+   574→  categories,
+   575→}: {
+   576→  form: ProductForm
+   577→  setForm: React.Dispatch<React.SetStateAction<ProductForm>>
+   578→  categories: Category[]
+   579→}) {
+   580→  const [uploading, setUploading] = useState(false)
+   581→  const [dragOver, setDragOver] = useState(false)
+   582→
+   583→  // Atualiza slug automaticamente quando muda o nome (apenas se slug vazio ou igual ao slug do nome antigo)
+   584→  useEffect(() => {
+   585→    if (
+   586→      form.name &&
+   587→      (!form.slug || form.slug === slugify(form.name.slice(0, -1)))
+   588→    ) {
+   589→      setForm((f) => ({ ...f, slug: slugify(f.name) }))
+   590→    }
+   591→  }, [form.name])
+   592→
+   593→  async function uploadFiles(files: FileList | File[]) {
+   594→    const arr = Array.from(files).filter((f) => f.type.startsWith('image/'))
+   595→    if (arr.length === 0) return
+   596→    if (form.images.length + arr.length > 20) {
+   597→      toast.error('Máximo de 20 imagens por produto.')
+   598→      return
+   599→    }
+   600→    setUploading(true)
+   601→    try {
+   602→      const fd = new FormData()
+   603→      arr.forEach((f) => fd.append('file', f))
+   604→      const r = await fetch('/api/admin/upload', { method: 'POST', body: fd })
+   605→      const data = await r.json()
+   606→      if (!r.ok) throw new Error(data?.error ?? 'Falha no upload')
+   607→      const urls: string[] = data.urls ?? []
+   608→      setForm((f) => ({
+   609→        ...f,
+   610→        images: [
+   611→          ...f.images,
+   612→          ...urls.map<ImageDraft>((url, i) => ({
+   613→            url,
+   614→            isMain: f.images.length === 0 && i === 0,
+   615→            order: f.images.length + i,
+   616→          })),
+   617→        ],
+   618→      }))
+   619→      toast.success(`${urls.length} imagem(s) enviada(s).`)
+   620→    } catch (e) {
+   621→      toast.error((e as Error).message)
+   622→    } finally {
+   623→      setUploading(false)
+   624→    }
+   625→  }
+   626→
+   627→  function removeImage(idx: number) {
+   628→    setForm((f) => {
+   629→      const imgs = [...f.images]
+   630→      imgs.splice(idx, 1)
+   631→      if (imgs.length && !imgs.some((i) => i.isMain)) imgs[0].isMain = true
+   632→      return { ...f, images: imgs.map((im, i) => ({ ...im, order: i })) }
+   633→    })
+   634→  }
+   635→
+   636→  function setMainImage(idx: number) {
+   637→    setForm((f) => ({
+   638→      ...f,
+   639→      images: f.images.map((im, i) => ({ ...im, isMain: i === idx })),
+   640→    }))
+   641→  }
+   642→
+   643→  function moveImage(idx: number, dir: -1 | 1) {
+   644→    setForm((f) => {
+   645→      const arr = [...f.images]
+   646→      const ni = idx + dir
+   647→      if (ni < 0 || ni >= arr.length) return f
+   648→      ;[arr[idx], arr[ni]] = [arr[ni], arr[idx]]
+   649→      return {
+   650→        ...f,
+   651→        images: arr.map((im, i) => ({ ...im, order: i })),
+   652→      }
+   653→    })
+   654→  }
+   655→
+   656→  function addColor() {
+   657→    setForm((f) => ({
+   658→      ...f,
+   659→      colors: [...f.colors, { name: '', hex: '#0a0a0a', stock: 0 }],
+   660→    }))
+   661→  }
+   662→  function updateColor(idx: number, patch: Partial<ColorDraft>) {
+   663→    setForm((f) => ({
+   664→      ...f,
+   665→      colors: f.colors.map((c, i) => (i === idx ? { ...c, ...patch } : c)),
+   666→    }))
+   667→  }
+   668→  function removeColor(idx: number) {
+   669→    setForm((f) => ({
+   670→      ...f,
+   671→      colors: f.colors.filter((_, i) => i !== idx),
+   672→    }))
+   673→  }
+   674→
+   675→  function addSize() {
+   676→    setForm((f) => ({
+   677→      ...f,
+   678→      sizes: [...f.sizes, { name: '', stock: 0 }],
+   679→    }))
+   680→  }
+   681→  function updateSize(idx: number, patch: Partial<SizeDraft>) {
+   682→    setForm((f) => ({
+   683→      ...f,
+   684→      sizes: f.sizes.map((s, i) => (i === idx ? { ...s, ...patch } : s)),
+   685→    }))
+   686→  }
+   687→  function removeSize(idx: number) {
+   688→    setForm((f) => ({
+   689→      ...f,
+   690→      sizes: f.sizes.filter((_, i) => i !== idx),
+   691→    }))
+   692→  }
+   693→
+   694→  const field =
+   695→    'h-11 w-full rounded-md border border-border bg-background px-3 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/30'
+   696→
+   697→  return (
+   698→    <div className="space-y-6">
+   699→      {/* BÁSICO */}
+   700→      <section className="rounded-lg border border-border bg-surface p-5">
+   701→        <h3 className="mb-4 font-serif text-lg">Informações básicas</h3>
+   702→        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+   703→          <div className="sm:col-span-2">
+   704→            <Label className="mb-1.5 block text-xs uppercase tracking-wider">
+   705→              Nome *
+   706→            </Label>
+   707→            <Input
+   708→              value={form.name}
+   709→              onChange={(e) =>
+   710→                setForm((f) => ({ ...f, name: e.target.value }))
+   711→              }
+   712→              placeholder="Ex: Vestido midi translúcido"
+   713→              className="h-11"
+   714→            />
+   715→          </div>
+   716→          <div>
+   717→            <Label className="mb-1.5 block text-xs uppercase tracking-wider">
+   718→              Slug (URL)
+   719→            </Label>
+   720→            <Input
+   721→              value={form.slug}
+   722→              onChange={(e) =>
+   723→                setForm((f) => ({ ...f, slug: slugify(e.target.value) }))
+   724→              }
+   725→              placeholder="gerado-automaticamente"
+   726→              className="h-11"
+   727→            />
+   728→          </div>
+   729→          <div>
+   730→            <Label className="mb-1.5 block text-xs uppercase tracking-wider">
+   731→              SKU (opcional)
+   732→            </Label>
+   733→            <Input
+   734→              value={form.sku}
+   735→              onChange={(e) =>
+   736→                setForm((f) => ({ ...f, sku: e.target.value }))
+   737→              }
+   738→              placeholder="VL-0001"
+   739→              className="h-11"
+   740→            />
+   741→          </div>
+   742→          <div className="sm:col-span-2">
+   743→            <Label className="mb-1.5 block text-xs uppercase tracking-wider">
+   744→              Descrição *
+   745→            </Label>
+   746→            <Textarea
+   747→              value={form.description}
+   748→              onChange={(e) =>
+   749→                setForm((f) => ({ ...f, description: e.target.value }))
+   750→              }
+   751→              rows={4}
+   752→              placeholder="Tecido, modelagem, ocasião…"
+   753→              className="min-h-24 resize-y"
+   754→            />
+   755→          </div>
+   756→        </div>
+   757→      </section>
+   758→
+   759→      {/* PREÇO E STATUS */}
+   760→      <section className="rounded-lg border border-border bg-surface p-5">
+   761→        <h3 className="mb-4 font-serif text-lg">Preço e organização</h3>
+   762→        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+   763→          <div>
+   764→            <Label className="mb-1.5 block text-xs uppercase tracking-wider">
+   765→              Preço (R$) *
+   766→            </Label>
+   767→            <Input
+   768→              type="number"
+   769→              step="0.01"
+   770→              value={form.price}
+   771→              onChange={(e) =>
+   772→                setForm((f) => ({ ...f, price: e.target.value }))
+   773→              }
+   774→              placeholder="0,00"
+   775→              className="h-11"
+   776→            />
+   777→          </div>
+   778→          <div>
+   779→            <Label className="mb-1.5 block text-xs uppercase tracking-wider">
+   780→              Preço de (riscado)
+   781→            </Label>
+   782→            <Input
+   783→              type="number"
+   784→              step="0.01"
+   785→              value={form.compareAt}
+   786→              onChange={(e) =>
+   787→                setForm((f) => ({ ...f, compareAt: e.target.value }))
+   788→              }
+   789→              placeholder="opcional"
+   790→              className="h-11"
+   791→            />
+   792→          </div>
+   793→          <div>
+   794→            <Label className="mb-1.5 block text-xs uppercase tracking-wider">
+   795→              Status
+   796→            </Label>
+   797→            <Select
+   798→              value={form.status}
+   799→              onValueChange={(v) =>
+   800→                setForm((f) => ({
+   801→                  ...f,
+   802→                  status: v as ProductForm['status'],
+   803→                }))
+   804→              }
+   805→            >
+   806→              <SelectTrigger className="h-11 w-full">
+   807→                <SelectValue placeholder="Selecione" />
+   808→              </SelectTrigger>
+   809→              <SelectContent>
+   810→                <SelectItem value="active">Ativo</SelectItem>
+   811→                <SelectItem value="draft">Rascunho</SelectItem>
+   812→                <SelectItem value="archived">Arquivado</SelectItem>
+   813→              </SelectContent>
+   814→            </Select>
+   815→          </div>
+   816→          <div>
+   817→            <Label className="mb-1.5 block text-xs uppercase tracking-wider">
+   818→              Categoria
+   819→            </Label>
+   820→            <Select
+   821→              value={form.categoryId}
+   822→              onValueChange={(v) =>
+   823→                setForm((f) => ({ ...f, categoryId: v }))
+   824→              }
+   825→            >
+   826→              <SelectTrigger className="h-11 w-full">
+   827→                <SelectValue placeholder="Selecione" />
+   828→              </SelectTrigger>
+   829→              <SelectContent>
+   830→                {categories.length === 0 ? (
+   831→                  <SelectItem value="_none" disabled>
+   832→                    Nenhuma categoria cadastrada
+   833→                  </SelectItem>
+   834→                ) : (
+   835→                  categories.map((c) => (
+   836→                    <SelectItem key={c.id} value={c.id}>
+   837→                      {c.name}
+   838→                      {c.active === false ? ' (inativa)' : ''}
+   839→                    </SelectItem>
+   840→                  ))
+   841→                )}
+   842→              </SelectContent>
+   843→            </Select>
+   844→          </div>
+   845→          <div>
+   846→            <Label className="mb-1.5 block text-xs uppercase tracking-wider">
+   847→              Tags (separadas por vírgula)
+   848→            </Label>
+   849→            <Input
+   850→              value={form.tags}
+   851→              onChange={(e) =>
+   852→                setForm((f) => ({ ...f, tags: e.target.value }))
+   853→              }
+   854→              placeholder="verão, festa, manga longa"
+   855→              className="h-11"
+   856→            />
+   857→          </div>
+   858→          <div>
+   859→            <Label className="mb-1.5 block text-xs uppercase tracking-wider">
+   860→              Destaque
+   861→            </Label>
+   862→            <div className="flex h-11 items-center gap-3 rounded-md border border-border bg-background px-4">
+   863→              <Switch
+   864→                checked={form.featured}
+   865→                onCheckedChange={(v) =>
+   866→                  setForm((f) => ({ ...f, featured: v }))
+   867→                }
+   868→              />
+   869→              <span className="text-xs text-muted-foreground">
+   870→                Marcar como produto em destaque
+   871→              </span>
+   872→            </div>
+   873→          </div>
+   874→        </div>
+   875→      </section>
+   876→
+   877→      {/* IMAGENS */}
+   878→      <section className="rounded-lg border border-border bg-surface p-5">
+   879→        <div className="mb-4 flex items-center justify-between">
+   880→          <div>
+   881→            <h3 className="font-serif text-lg">Imagens</h3>
+   882→            <p className="text-[11px] text-muted-foreground">
+   883→              Máx. 20 · convertidas para WebP (1600px) no upload.
+   884→            </p>
+   885→          </div>
+   886→          {form.images.length > 0 && (
+   887→            <Badge className="bg-accent text-accent-foreground">
+   888→              {form.images.length}
+   889→            </Badge>
+   890→          )}
+   891→        </div>
+   892→
+   893→        <label
+   894→          onDragOver={(e) => {
+   895→            e.preventDefault()
+   896→            setDragOver(true)
+   897→          }}
+   898→          onDragLeave={() => setDragOver(false)}
+   899→          onDrop={(e) => {
+   900→            e.preventDefault()
+   901→            setDragOver(false)
+   902→            if (e.dataTransfer.files.length > 0) {
+   903→              uploadFiles(e.dataTransfer.files)
+   904→            }
+   905→          }}
+   906→          className={`flex cursor-pointer flex-col items-center justify-center gap-2 rounded-md border-2 border-dashed p-6 text-center transition ${
+   907→            dragOver
+   908→              ? 'border-accent bg-accent/10'
+   909→              : 'border-border hover:border-accent/50'
+   910→          }`}
+   911→        >
+   912→          <input
+   913→            type="file"
+   914→            multiple
+   915→            accept="image/*"
+   916→            className="sr-only"
+   917→            onChange={(e) => {
+   918→              if (e.target.files) uploadFiles(e.target.files)
+   919→              e.currentTarget.value = ''
+   920→            }}
+   921→          />
+   922→          {uploading ? (
+   923→            <>
+   924→              <Loader2 className="size-6 animate-spin text-accent" />
+   925→              <span className="text-xs uppercase tracking-wider text-muted-foreground">
+   926→                Enviando…
+   927→              </span>
+   928→            </>
+   929→          ) : (
+   930→            <>
+   931→              <Upload className="size-6 text-accent" />
+   932→              <p className="text-sm font-medium">
+   933→                Arraste imagens ou clique para enviar
+   934→              </p>
+   935→              <p className="text-[11px] text-muted-foreground">
+   936→                WebP automático · máx 1600px de largura
+   937→              </p>
+   938→            </>
+   939→          )}
+   940→        </label>
+   941→
+   942→        {form.images.length > 0 && (
+   943→          <div className="mt-4 grid grid-cols-3 gap-3 sm:grid-cols-4">
+   944→            {form.images.map((im, i) => (
+   945→              <div
+   946→                key={i}
+   947→                className={`group relative overflow-hidden rounded-md border bg-muted ${
+   948→                  im.isMain ? 'border-accent ring-2 ring-accent/40' : 'border-border'
+   949→                }`}
+   950→              >
+   951→                <div className="relative aspect-square">
+   952→                  <img
+   953→                    src={im.url}
+   954→                    alt={`Imagem ${i + 1}`}
+   955→                    className="size-full object-cover"
+   956→                  />
+   957→                  <div className="absolute inset-0 bg-black/0 transition group-hover:bg-black/30" />
+   958→                  {/* Ações */}
+   959→                  <div className="absolute right-1 top-1 flex gap-1">
+   960→                    <button
+   961→                      type="button"
+   962→                      onClick={() => removeImage(i)}
+   963→                      aria-label="Remover"
+   964→                      className="grid size-7 place-items-center rounded bg-black/60 text-white hover:bg-destructive"
+   965→                    >
+   966→                      <X className="size-3.5" />
+   967→                    </button>
+   968→                  </div>
+   969→                  <div className="absolute bottom-1 left-1 flex gap-1">
+   970→                    <button
+   971→                      type="button"
+   972→                      onClick={() => moveImage(i, -1)}
+   973→                      disabled={i === 0}
+   974→                      aria-label="Mover esquerda"
+   975→                      className="grid size-7 place-items-center rounded bg-black/60 text-white disabled:opacity-30"
+   976→                    >
+   977→                      <ChevronUp className="size-3.5" />
+   978→                    </button>
+   979→                    <button
+   980→                      type="button"
+   981→                      onClick={() => moveImage(i, 1)}
+   982→                      disabled={i === form.images.length - 1}
+   983→                      aria-label="Mover direita"
+   984→                      className="grid size-7 place-items-center rounded bg-black/60 text-white disabled:opacity-30"
+   985→                    >
+   986→                      <ChevronDown className="size-3.5" />
+   987→                    </button>
+   988→                  </div>
+   989→                </div>
+   990→                <label className="flex cursor-pointer items-center justify-center gap-1.5 border-t border-border py-1 text-[10px] uppercase tracking-wider">
+   991→                  <input
+   992→                    type="radio"
+   993→                    name="main-image"
+   994→                    checked={im.isMain}
+   995→                    onChange={() => setMainImage(i)}
+   996→                    className="accent-accent"
+   997→                  />
+   998→                  {im.isMain ? (
+   999→                    <span className="text-accent">Principal</span>
+  1000→                  ) : (
+  1001→                    <span className="text-muted-foreground">Capa</span>
+  1002→                  )}
+  1003→                </label>
+  1004→              </div>
+  1005→            ))}
+  1006→          </div>
+  1007→        )}
+  1008→      </section>
+  1009→
+  1010→      {/* CORES */}
+  1011→      <section className="rounded-lg border border-border bg-surface p-5">
+  1012→        <div className="mb-4 flex items-center justify-between">
+  1013→          <div>
+  1014→            <h3 className="font-serif text-lg">Cores & estoque</h3>
+  1015→            <p className="text-[11px] text-muted-foreground">
+  1016→              Cada cor vira swatch na ficha do produto.
+  1017→            </p>
+  1018→          </div>
+  1019→          <Button
+  1020→            type="button"
+  1021→            onClick={addColor}
+  1022→            variant="outline"
+  1023→            className="h-9 gap-1.5 px-3 text-xs"
+  1024→          >
+  1025→            <Plus className="size-3.5" />
+  1026→            Cor
+  1027→          </Button>
+  1028→        </div>
+  1029→        {form.colors.length === 0 ? (
+  1030→          <p className="py-6 text-center text-sm text-muted-foreground">
+  1031→            Nenhuma cor adicionada.
+  1032→          </p>
+  1033→        ) : (
+  1034→          <div className="space-y-2">
+  1035→            {form.colors.map((c, i) => (
+  1036→              <div
+  1037→                key={i}
+  1038→                className="flex flex-col gap-2 rounded-md border border-border bg-background p-2 sm:flex-row sm:items-center"
+  1039→              >
+  1040→                <input
+  1041→                  type="color"
+  1042→                  value={c.hex}
+  1043→                  onChange={(e) => updateColor(i, { hex: e.target.value })}
+  1044→                  className="size-11 shrink-0 cursor-pointer rounded border border-border bg-transparent p-1"
+  1045→                  aria-label="Cor"
+  1046→                />
+  1047→                <Input
+  1048→                  value={c.name}
+  1049→                  onChange={(e) => updateColor(i, { name: e.target.value })}
+  1050→                  placeholder="Nome (Preto, Off-white, Vinho…)"
+  1051→                  className="h-11 flex-1"
+  1052→                />
+  1053→                <div className="flex items-center gap-2">
+  1054→                  <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">
+  1055→                    Estoque
+  1056→                  </Label>
+  1057→                  <Input
+  1058→                    type="number"
+  1059→                    min={0}
+  1060→                    value={c.stock}
+  1061→                    onChange={(e) =>
+  1062→                      updateColor(i, { stock: Number(e.target.value) || 0 })
+  1063→                    }
+  1064→                    className="h-11 w-24"
+  1065→                  />
+  1066→                  <button
+  1067→                    type="button"
+  1068→                    onClick={() => removeColor(i)}
+  1069→                    aria-label="Remover cor"
+  1070→                    className="grid size-11 place-items-center rounded-md text-destructive hover:bg-destructive/10"
+  1071→                  >
+  1072→                    <Trash2 className="size-4" />
+  1073→                  </button>
+  1074→                </div>
+  1075→              </div>
+  1076→            ))}
+  1077→          </div>
+  1078→        )}
+  1079→      </section>
+  1080→
+  1081→      {/* TAMANHOS */}
+  1082→      <section className="rounded-lg border border-border bg-surface p-5">
+  1083→        <div className="mb-4 flex items-center justify-between">
+  1084→          <div>
+  1085→            <h3 className="font-serif text-lg">Tamanhos & estoque</h3>
+  1086→            <p className="text-[11px] text-muted-foreground">
+  1087→              P, M, G, GG, EXG ou personalizado.
+  1088→            </p>
+  1089→          </div>
+  1090→          <Button
+  1091→            type="button"
+  1092→            onClick={addSize}
+  1093→            variant="outline"
+  1094→            className="h-9 gap-1.5 px-3 text-xs"
+  1095→          >
+  1096→            <Plus className="size-3.5" />
+  1097→            Tamanho
+  1098→          </Button>
+  1099→        </div>
+  1100→        {form.sizes.length === 0 ? (
+  1101→          <p className="py-6 text-center text-sm text-muted-foreground">
+  1102→            Nenhum tamanho adicionado.
+  1103→          </p>
+  1104→        ) : (
+  1105→          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+  1106→            {form.sizes.map((s, i) => (
+  1107→              <div
+  1108→                key={i}
+  1109→                className="flex items-center gap-2 rounded-md border border-border bg-background p-2"
+  1110→              >
+  1111→                <Input
+  1112→                  value={s.name}
+  1113→                  onChange={(e) => updateSize(i, { name: e.target.value })}
+  1114→                  placeholder="P / M / G / GG / EXG"
+  1115→                  className="h-11 flex-1"
+  1116→                />
+  1117→                <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">
+  1118→                  Estoque
+  1119→                </Label>
+  1120→                <Input
+  1121→                  type="number"
+  1122→                  min={0}
+  1123→                  value={s.stock}
+  1124→                  onChange={(e) =>
+  1125→                    updateSize(i, { stock: Number(e.target.value) || 0 })
+  1126→                  }
+  1127→                  className="h-11 w-24"
+  1128→                />
+  1129→                <button
+  1130→                  type="button"
+  1131→                  onClick={() => removeSize(i)}
+  1132→                  aria-label="Remover tamanho"
+  1133→                  className="grid size-11 place-items-center rounded-md text-destructive hover:bg-destructive/10"
+  1134→                >
+  1135→                  <Trash2 className="size-4" />
+  1136→                </button>
+  1137→              </div>
+  1138→            ))}
+  1139→          </div>
+  1140→        )}
+  1141→      </section>
+  1142→
+  1143→      <p className="flex items-center justify-center gap-1.5 text-center text-[11px] text-muted-foreground">
+  1144→        <Check className="size-3 text-accent" />
+  1145→        {form.featured
+  1146→          ? 'Produto marcado como destaque.'
+  1147→          : 'Sem marcação de destaque.'}
+  1148→      </p>
+  1149→    </div>
+  1150→  )
+  1151→}
+  1152→
