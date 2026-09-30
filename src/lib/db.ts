@@ -24,7 +24,7 @@ if (needsRebuild) {
     }
   }
   globalForPrisma.prisma = new PrismaClient({
-    log: ['query'],
+    log: process.env.NODE_ENV === 'production' ? ['error'] : ['query'],
   })
   globalForPrisma.prismaSchemaVersion = SCHEMA_VERSION
 }

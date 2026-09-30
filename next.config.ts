@@ -35,6 +35,13 @@ const PROD_ONLY_HEADERS = [
 
 const nextConfig: NextConfig = {
   reactStrictMode: false,
+  // O painel admin vive em /?view=admin — /admin redireciona pra lá.
+  async redirects() {
+    return [
+      { source: '/admin', destination: '/?view=admin', permanent: false },
+      { source: '/admin/', destination: '/?view=admin', permanent: false },
+    ]
+  },
   async headers() {
     const isProd = process.env.NODE_ENV === "production";
     const headers = [...BASE_SECURITY_HEADERS];

@@ -2,6 +2,7 @@
 // Suporta ?q= busca por nome/email/telefone.
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { contains } from '@/lib/db-search'
 import { requireAdmin } from '@/lib/admin-guard'
 
 export const dynamic = 'force-dynamic'
@@ -17,9 +18,9 @@ export async function GET(req: NextRequest) {
     const where: any = {}
     if (q) {
       where.OR = [
-        { name: { contains: q } },
-        { email: { contains: q } },
-        { phone: { contains: q } },
+        { name: contains(q) },
+        { email: contains(q) },
+        { phone: contains(q) },
       ]
     }
 

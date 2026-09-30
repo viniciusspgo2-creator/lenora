@@ -2,6 +2,7 @@
 // GET  /api/orders — lista pedidos (admin) com filtros ?status= e ?q=.
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { contains } from '@/lib/db-search'
 import { orderNumber } from '@/lib/utils-lenora'
 import { requireAdmin } from '@/lib/admin-guard'
 import { getCurrentCustomer } from '@/lib/auth'
@@ -99,9 +100,9 @@ export async function GET(req: NextRequest) {
     if (status) where.status = status
     if (q) {
       where.OR = [
-        { orderNumber: { contains: q } },
-        { customerPhone: { contains: q } },
-        { customerName: { contains: q } },
+        { orderNumber: contains(q) },
+        { customerPhone: contains(q) },
+        { customerName: contains(q) },
       ]
     }
 

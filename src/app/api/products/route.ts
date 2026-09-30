@@ -1,6 +1,7 @@
 // GET /api/products — lista pública de produtos com filtros, ordenação e paginação.
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { contains } from '@/lib/db-search'
 
 export const dynamic = 'force-dynamic'
 
@@ -23,8 +24,8 @@ export async function GET(req: NextRequest) {
     if (category) where.category = { slug: category }
     if (q) {
       where.OR = [
-        { name: { contains: q } },
-        { description: { contains: q } },
+        { name: contains(q) },
+        { description: contains(q) },
       ]
     }
     if (minPrice !== undefined || maxPrice !== undefined) {

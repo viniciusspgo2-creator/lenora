@@ -5,6 +5,7 @@
 import { Suspense } from 'react'
 import type { Metadata } from 'next'
 import { db } from '@/lib/db'
+import { contains } from '@/lib/db-search'
 import { getSettings } from '@/lib/settings-server'
 import { SiteShell } from '@/components/site-shell'
 import { QueryProvider } from '@/components/providers/query-provider'
@@ -204,7 +205,10 @@ export default async function Page({
       },
     })
     .then((cs) => cs)
-    .catch(() => [])
+    .catch((e) => {
+      console.error('[db] categorias falharam:', e)
+      return []
+    })
 
   let content: React.ReactNode = null
   // JSON-LD schemas injetados por view (SEO estruturado)
@@ -228,8 +232,8 @@ export default async function Page({
     if (q) {
       const ql = q.toLowerCase()
       where.OR = [
-        { name: { contains: ql } },
-        { description: { contains: ql } },
+        { name: contains(ql) },
+        { description: contains(ql) },
       ]
     }
     if (minPrice) {
@@ -269,7 +273,10 @@ export default async function Page({
         },
       }),
       db.product.count({ where }),
-    ]).catch(() => [[], 0] as [any[], number])
+    ]).catch((e) => {
+      console.error('[db] listagem da loja falhou:', e)
+      return [[], 0] as [any[], number]
+    })
 
     const initialProducts: ProductCardData[] = (items as any[]).map((p) => ({
       id: p.id,
@@ -505,7 +512,10 @@ export default async function Page({
           sizes: true,
         },
       }),
-    ]).catch(() => [[], [], []] as [any[], any[], any[]])
+    ]).catch((e) => {
+      console.error('[db] home falhou:', e)
+      return [[], [], []] as [any[], any[], any[]]
+    })
 
     const map = (p: any): ProductCardData => ({
       id: p.id,

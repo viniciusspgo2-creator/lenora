@@ -138,6 +138,23 @@ export function AdminProducts({ settings }: { settings: SiteSettings }) {
   const [deleteId, setDeleteId] = useState<string | null>(null)
   const [deleteName, setDeleteName] = useState('')
   const [search, setSearch] = useState('')
+  const [seeding, setSeeding] = useState(false)
+
+  async function loadDemo() {
+    setSeeding(true)
+    try {
+      const r = await fetch('/api/admin/seed-demo', { method: 'POST' })
+      const j = await r.json().catch(() => ({}))
+      if (!r.ok) throw new Error(j.error || 'Falha ao carregar demonstrativos')
+      toast.success(`${j.productsCreated} produtos e ${j.categoriesCreated} categorias carregados`)
+      qc.invalidateQueries({ queryKey: ['admin', 'products'] })
+      qc.invalidateQueries({ queryKey: ['admin', 'categories'] })
+    } catch (e) {
+      toast.error((e as Error).message)
+    } finally {
+      setSeeding(false)
+    }
+  }
 
   // Lista de produtos (admin)
   const productsQuery = useQuery<{ items: ProductRow[] }>({
@@ -370,6 +387,17 @@ export function AdminProducts({ settings }: { settings: SiteSettings }) {
               <Plus className="size-4" />
               Criar primeiro produto
             </Button>
+            {!search.trim() && (
+              <Button
+                variant="outline"
+                onClick={loadDemo}
+                disabled={seeding}
+                className="h-10 gap-2 text-xs uppercase tracking-[0.2em]"
+              >
+                {seeding ? <Loader2 className="size-4 animate-spin" /> : <Upload className="size-4" />}
+                Carregar produtos demonstrativos
+              </Button>
+            )}
           </div>
         ) : (
           <div className="overflow-x-auto">
