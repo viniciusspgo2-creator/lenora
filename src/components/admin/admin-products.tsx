@@ -630,6 +630,19 @@ function ProductEditor({
       const fd = new FormData()
       arr.forEach((f) => fd.append('file', f))
       const r = await fetch('/api/admin/upload', { method: 'POST', body: fd })
+      const contentType = r.headers.get('content-type') ?? ''
+
+      if (!contentType.includes('application/json')) {
+        // Evita o erro confuso "Unexpected token '<'" quando o servidor
+        // responde uma página HTML (por exemplo, 404/500 do Next.js).
+        await r.text()
+        throw new Error(
+          r.status === 404
+            ? 'A rota de upload não foi encontrada no servidor.'
+            : `Falha no upload (HTTP ${r.status}).`,
+        )
+      }
+
       const data = await r.json()
       if (!r.ok) throw new Error(data?.error ?? 'Falha no upload')
       const urls: string[] = data.urls ?? []
