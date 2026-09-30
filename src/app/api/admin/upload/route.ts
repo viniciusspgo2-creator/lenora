@@ -22,7 +22,7 @@ async function persistImage(filename: string, output: Buffer) {
   // Produção/preview da Vercel: o filesystem do deployment (/var/task) é read-only.
   // Vercel Blob é persistente e devolve uma URL pública apropriada para o catálogo.
   if (process.env.VERCEL === '1' || process.env.NODE_ENV === 'production') {
-    const blob = await put(`products/${filename}`, new Uint8Array(output), {
+    const blob = await put(`products/${filename}`, output, {
       access: 'public',
       contentType: 'image/webp',
       addRandomSuffix: false,

@@ -18,3 +18,8 @@ Em stores que usam token legado, a variável `BLOB_READ_WRITE_TOKEN` é criada/c
 ## Desenvolvimento local
 
 Fora da produção, o projeto continua usando `public/uploads`, então o fluxo local segue funcionando sem Blob.
+
+
+## Correção v3
+- O corpo enviado ao `@vercel/blob` agora é o `Buffer` retornado pelo Sharp. A versão anterior convertia para `Uint8Array`, que não pertence ao tipo `PutBody` do SDK e fazia o `next build` parar em `Running TypeScript`.
+- `package.json` atualizado para Node.js 24.x para compatibilidade com os novos deployments da Vercel.
