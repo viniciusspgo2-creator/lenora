@@ -4,6 +4,7 @@
 // Rodar:  bun run scripts/seed-lenora.ts
 
 import { db } from '../src/lib/db'
+import { DEFAULT_SETTINGS, withPaletteVersion } from '../src/lib/settings'
 import { existsSync } from 'node:fs'
 import { join } from 'node:path'
 
@@ -187,6 +188,18 @@ async function main() {
       minSubtotal: 0,
       maxUses: 0,
       active: true,
+    },
+  })
+
+  console.log('→ Gravando a paleta rosa oficial nas configurações…')
+  // Garante que o site nunca abra com paleta antiga (ex.: dourada) em bancos
+  // reaproveitados — o valor já vai carimbado com a versão da paleta.
+  await db.setting.upsert({
+    where: { key: 'colors' },
+    update: { value: JSON.stringify(withPaletteVersion(DEFAULT_SETTINGS.colors)) },
+    create: {
+      key: 'colors',
+      value: JSON.stringify(withPaletteVersion(DEFAULT_SETTINGS.colors)),
     },
   })
 

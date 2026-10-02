@@ -6,7 +6,7 @@ import {
   getSettings,
   invalidateSettingsCache,
 } from '@/lib/settings-server'
-import type { SiteSettings } from '@/lib/settings'
+import { withPaletteVersion, type SiteSettings } from '@/lib/settings'
 import { requireAdmin } from '@/lib/admin-guard'
 
 export const dynamic = 'force-dynamic'
@@ -41,7 +41,12 @@ export async function PUT(req: NextRequest) {
 
     for (const key of ALLOWED_KEYS) {
       if (body[key] !== undefined) {
-        const value = JSON.stringify(body[key])
+        // Cores salvas pelo painel ganham a versão atual da paleta, para não
+        // serem confundidas com paletas desatualizadas em leituras futuras.
+        const value =
+          key === 'colors'
+            ? JSON.stringify(withPaletteVersion(body[key] as SiteSettings['colors']))
+            : JSON.stringify(body[key])
         await db.setting.upsert({
           where: { key },
           update: { value },

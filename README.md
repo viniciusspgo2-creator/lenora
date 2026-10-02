@@ -216,6 +216,7 @@ PostgreSQL (mesmo `setup:postgres` do passo anterior).
 
 | Problema | Solução |
 |---|---|
+| Site publicado com **cores antigas (dourado)** nos botões | O banco guardou a paleta antiga. Com esta versão do código, basta publicar de novo (deploy) — no primeiro acesso o site substitui a paleta antiga pela rosa sozinho, sem perder produtos. Alternativa imediata: painel admin → Configurações → Cores (corrija os valores e salve). |
 | `Erro P1001: can't reach database` (produção) | Confira se `DATABASE_URL` na Vercel aponta para o Neon e se o banco já foi criado/populado (`npm run setup:postgres`). |
 | `Erro P1001` ou página sem produtos (local) | Rode `npm run db:push && npm run db:seed`. |
 | `Prisma Client did not initialize yet` | Rode `npm run db:generate` (ou `npm install` de novo). |

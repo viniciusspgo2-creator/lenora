@@ -2,6 +2,35 @@
 // Cores padrão (branco / rosa escuro / rosa bebê) — personalizáveis pelo painel admin.
 // Cada chave vira uma linha na tabela Setting (valor em JSON string).
 
+// Versão da paleta oficial. Se a linha "colors" salva no banco tiver outra
+// versão (ou nenhuma), ela é considerada DESATUALIZADA (ex.: paleta dourada
+// persistida por uma build antiga) e é substituída automaticamente pelos
+// defaults atuais — sem precisar mexer no banco à mão.
+// Ao customizar cores pelo painel admin, a versão atual é carimbada junto.
+export const PALETTE_VERSION = 'rosa-2026-10'
+
+type StoredColors = SiteSettings['colors'] & { _paletteVersion?: string }
+
+/** Carimba a versão da paleta no objeto de cores (para persistir no banco). */
+export function withPaletteVersion(colors: SiteSettings['colors']): StoredColors {
+  return { ...colors, _paletteVersion: PALETTE_VERSION }
+}
+
+/** Lê o JSON de cores do banco e devolve cores válidas (ou os defaults). */
+function parseStoredColors(raw: string | undefined): SiteSettings['colors'] {
+  if (!raw) return { ...DEFAULT_SETTINGS.colors }
+  try {
+    const parsed = JSON.parse(raw) as StoredColors
+    if (!parsed || typeof parsed !== 'object') throw new Error('inválido')
+    if (parsed._paletteVersion !== PALETTE_VERSION) throw new Error('paleta desatualizada')
+    const { _paletteVersion: _ignored, ...colors } = parsed
+    return colors
+  } catch {
+    // JSON corrompido ou paleta de uma versão antiga (ex.: dourada) → defaults.
+    return { ...DEFAULT_SETTINGS.colors }
+  }
+}
+
 export type SiteSettings = {
   brandName: string
   brandTagline: string
@@ -127,7 +156,7 @@ export function settingsToRows(s: SiteSettings) {
   return [
     { key: 'brandName', value: JSON.stringify(s.brandName) },
     { key: 'brandTagline', value: JSON.stringify(s.brandTagline) },
-    { key: 'colors', value: JSON.stringify(s.colors) },
+    { key: 'colors', value: JSON.stringify(withPaletteVersion(s.colors)) },
     { key: 'contact', value: JSON.stringify(s.contact) },
     { key: 'shipping', value: JSON.stringify(s.shipping) },
     { key: 'seo', value: JSON.stringify(s.seo) },
@@ -142,7 +171,7 @@ export function rowsToSettings(rows: { key: string; value: string }[]): SiteSett
   return {
     brandName: map.brandName ? JSON.parse(map.brandName) : DEFAULT_SETTINGS.brandName,
     brandTagline: map.brandTagline ? JSON.parse(map.brandTagline) : DEFAULT_SETTINGS.brandTagline,
-    colors: map.colors ? JSON.parse(map.colors) : DEFAULT_SETTINGS.colors,
+    colors: parseStoredColors(map.colors),
     contact: map.contact ? JSON.parse(map.contact) : DEFAULT_SETTINGS.contact,
     shipping: map.shipping ? JSON.parse(map.shipping) : DEFAULT_SETTINGS.shipping,
     seo: map.seo
