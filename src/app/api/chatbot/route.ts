@@ -156,7 +156,7 @@ export async function POST(req: NextRequest) {
     try {
       const ZAIMod = await import('z-ai-web-dev-sdk').then((m) => m.default ?? m)
       const zai = await ZAIMod.create()
-      const systemPrompt = `Você é a Lia, assistente virtual da Loja Lenora, uma loja de moda feminina (paleta preto, branco e dourado).
+      const systemPrompt = `Você é a Lia, assistente virtual da Loja Lenora, uma loja de moda feminina (paleta branco, rosa e rosa-bebê).
 
 PERSONALIDADE:
 - Amigável, prestativa, direta e moderna. Sem enrolação.

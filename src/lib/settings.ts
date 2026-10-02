@@ -1,5 +1,5 @@
 // Loja Lenora — configurações padrão do site
-// Cores padrão (branco/preto/dourado) — personalizáveis pelo painel admin.
+// Cores padrão (branco / rosa escuro / rosa bebê) — personalizáveis pelo painel admin.
 // Cada chave vira uma linha na tabela Setting (valor em JSON string).
 
 export type SiteSettings = {
@@ -11,9 +11,9 @@ export type SiteSettings = {
     surface: string // cards
     text: string // texto principal
     textMuted: string
-    primary: string // preto institucional
+    primary: string // rosa escuro profundo (faixas, footer, botões dark)
     primaryForeground: string
-    accent: string // dourado
+    accent: string // rosa principal
     accentForeground: string
     border: string
   }
@@ -66,13 +66,13 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   colors: {
     bg: '#ffffff',
     surface: '#ffffff',
-    text: '#0a0a0a',
-    textMuted: '#6b6b6b',
-    primary: '#0a0a0a',
-    primaryForeground: '#ffffff',
-    accent: '#C9A24B', // dourado
-    accentForeground: '#0a0a0a',
-    border: '#e7e3dc',
+    text: '#2b0b18',
+    textMuted: '#9d6b82',
+    primary: '#500724', // rosa escuro profundo
+    primaryForeground: '#fff5f9',
+    accent: '#db2777', // rosa principal
+    accentForeground: '#ffffff',
+    border: '#f2cfe0',
   },
   contact: {
     phone: '62993220950',

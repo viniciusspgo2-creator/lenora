@@ -28,7 +28,7 @@ export function BackToTop() {
           transition={{ duration: 0.2 }}
           onClick={toTop}
           aria-label="Voltar ao topo"
-          className="fixed bottom-[5.5rem] right-5 z-40 flex size-12 items-center justify-center rounded-full border border-border bg-background/90 text-foreground shadow-[0_8px_30px_-8px_rgba(10,10,10,0.25)] backdrop-blur transition-colors hover:border-accent hover:text-accent"
+          className="fixed bottom-[5.5rem] right-5 z-40 flex size-12 items-center justify-center rounded-full border border-border bg-background/90 text-foreground shadow-[0_8px_30px_-8px_rgba(80,7,36,0.3)] backdrop-blur transition-all hover:-translate-y-0.5 hover:border-accent hover:text-accent active:scale-90"
         >
           <ArrowUp className="h-5 w-5" strokeWidth={2.5} />
         </motion.button>

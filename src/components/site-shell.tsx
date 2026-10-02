@@ -1,9 +1,11 @@
 // Site Shell (Loja Lenora) — wrapper client-side que envolve a view ativa.
-// Renderiza header, main com children, footer, e os overlays (drawers/widgets).
+// Renderiza a faixa de anúncio no topo, header, main com children, footer,
+// e os overlays (drawers/widgets).
 'use client'
 import type { ReactNode } from 'react'
 import type { SiteSettings } from '@/lib/settings'
 import { QueryProvider } from '@/components/providers/query-provider'
+import { AnnouncementBar } from '@/components/announcement-bar'
 import { SiteHeader } from '@/components/site-header'
 import { SearchBar } from '@/components/search-bar'
 import { SiteFooter } from '@/components/site-footer'
@@ -25,6 +27,8 @@ export function SiteShell({
   return (
     <QueryProvider>
       <div className="flex min-h-screen flex-col bg-background text-foreground">
+        {/* Faixa deslizante — o começo de tudo, no topo absoluto do site */}
+        <AnnouncementBar />
         {/* Wrapper sticky: header + barra de busca fixa */}
         <div className="sticky top-0 z-50">
           <SiteHeader settings={settings} />

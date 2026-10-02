@@ -164,7 +164,7 @@ const EMPTY_FORM: FormState = {
 }
 
 const PIE_COLORS = [
-  '#C9A24B',
+  '#DB2777',
   '#0a0a0a',
   '#7a5c1f',
   '#3a3a3a',
@@ -478,7 +478,7 @@ export function AdminFinance({ settings }: { settings: SiteSettings }) {
                         }
                       />
                       <Tooltip
-                        cursor={{ fill: 'rgba(201,162,75,.08)' }}
+                        cursor={{ fill: 'rgba(219,39,119,.08)' }}
                         contentStyle={{
                           background: 'var(--popover)',
                           border: '1px solid var(--border)',
@@ -499,7 +499,7 @@ export function AdminFinance({ settings }: { settings: SiteSettings }) {
                       <Bar
                         dataKey="entradas"
                         name="entradas"
-                        fill="#C9A24B"
+                        fill="#DB2777"
                         radius={[4, 4, 0, 0]}
                       />
                       <Bar

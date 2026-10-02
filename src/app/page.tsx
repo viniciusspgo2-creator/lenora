@@ -474,8 +474,8 @@ export default async function Page({
       ]),
     )
   } else {
-    // Home: destaques, novidades, promoções
-    const [featured, newProducts, onSale] = await Promise.all([
+    // Home: destaques, novidades, promoções + contadores do perfil da loja
+    const [featured, newProducts, onSale, productCount, categoryCount] = await Promise.all([
       db.product.findMany({
         where: { status: 'active', featured: true },
         orderBy: { createdAt: 'desc' },
@@ -512,9 +512,11 @@ export default async function Page({
           sizes: true,
         },
       }),
+      db.product.count({ where: { status: 'active' } }),
+      db.category.count(),
     ]).catch((e) => {
       console.error('[db] home falhou:', e)
-      return [[], [], []] as [any[], any[], any[]]
+      return [[], [], [], 0, 0] as [any[], any[], any[], number, number]
     })
 
     const map = (p: any): ProductCardData => ({
@@ -537,6 +539,8 @@ export default async function Page({
         categories={categories}
         newProducts={newProducts.map(map)}
         onSale={onSale.map(map)}
+        productCount={productCount}
+        categoryCount={categoryCount}
       />
     )
     // SEO: ItemList (produtos em destaque) + Breadcrumb (Home)

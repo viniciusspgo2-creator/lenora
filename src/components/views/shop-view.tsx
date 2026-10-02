@@ -66,7 +66,7 @@ const COLORS = [
   { name: 'Branco', hex: '#ffffff' },
   { name: 'Off-white', hex: '#f6f4f0' },
   { name: 'Bege', hex: '#d9c9a3' },
-  { name: 'Dourado', hex: '#C9A24B' },
+  { name: 'Rosa', hex: '#db2777' },
   { name: 'Caramelo', hex: '#8a5a2b' },
   { name: 'Vinho', hex: '#5e1f2e' },
   { name: 'Vermelho', hex: '#c0392b' },

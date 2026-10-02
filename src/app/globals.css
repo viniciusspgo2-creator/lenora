@@ -44,63 +44,63 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
-/* Paleta padrão Loja Lenora: branco / preto / dourado.
+/* Paleta padrão Loja Lenora: branco / rosa escuro / rosa bebê.
    Estas variáveis são SOBRESCRITAS em runtime pelo SettingsServerInjector
    quando a dona do site muda as cores pelo painel admin. */
 :root {
   --radius: 0.5rem;
   --background: #ffffff;
-  --foreground: #0a0a0a;
+  --foreground: #2b0b18;
   --card: #ffffff;
-  --card-foreground: #0a0a0a;
+  --card-foreground: #2b0b18;
   --popover: #ffffff;
-  --popover-foreground: #0a0a0a;
-  --primary: #0a0a0a;
-  --primary-foreground: #ffffff;
-  --secondary: #f6f4f0;
-  --secondary-foreground: #0a0a0a;
-  --muted: #f6f4f0;
-  --muted-foreground: #6b6b6b;
-  --accent: #C9A24B;            /* dourado */
-  --accent-foreground: #0a0a0a;
+  --popover-foreground: #2b0b18;
+  --primary: #500724;              /* rosa escuro profundo (faixas, footer, botões dark) */
+  --primary-foreground: #fff5f9;
+  --secondary: #fce7f3;            /* rosa bebê (faixas suaves) */
+  --secondary-foreground: #500724;
+  --muted: #fdf2f8;                /* rosa bebê claríssimo */
+  --muted-foreground: #9d6b82;
+  --accent: #db2777;               /* rosa principal (botões, preços, destaques) */
+  --accent-foreground: #ffffff;
   --destructive: #c0392b;
-  --border: #e7e3dc;
-  --input: #e7e3dc;
-  --ring: #C9A24B;
-  --chart-1: #C9A24B;
-  --chart-2: #0a0a0a;
-  --chart-3: #b9b3a8;
-  --chart-4: #8a7a55;
-  --chart-5: #f0ece4;
+  --border: #f2cfe0;               /* rosa claro para bordas */
+  --input: #f2cfe0;
+  --ring: #db2777;
+  --chart-1: #db2777;
+  --chart-2: #500724;
+  --chart-3: #f472b6;
+  --chart-4: #f9a8d4;
+  --chart-5: #fce7f3;
   --sidebar: #ffffff;
-  --sidebar-foreground: #0a0a0a;
-  --sidebar-primary: #0a0a0a;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #f6f4f0;
-  --sidebar-accent-foreground: #0a0a0a;
-  --sidebar-border: #e7e3dc;
-  --sidebar-ring: #C9A24B;
+  --sidebar-foreground: #2b0b18;
+  --sidebar-primary: #500724;
+  --sidebar-primary-foreground: #fff5f9;
+  --sidebar-accent: #fdf2f8;
+  --sidebar-accent-foreground: #2b0b18;
+  --sidebar-border: #f2cfe0;
+  --sidebar-ring: #db2777;
 }
 
 .dark {
-  --background: #0a0a0a;
-  --foreground: #f6f4f0;
-  --card: #141414;
-  --card-foreground: #f6f4f0;
-  --popover: #141414;
-  --popover-foreground: #f6f4f0;
-  --primary: #f6f4f0;
-  --primary-foreground: #0a0a0a;
-  --secondary: #1c1c1c;
-  --secondary-foreground: #f6f4f0;
-  --muted: #1c1c1c;
-  --muted-foreground: #a9a9a9;
-  --accent: #C9A24B;
-  --accent-foreground: #0a0a0a;
+  --background: #1b030d;
+  --foreground: #fff5f9;
+  --card: #2b0817;
+  --card-foreground: #fff5f9;
+  --popover: #2b0817;
+  --popover-foreground: #fff5f9;
+  --primary: #fff5f9;
+  --primary-foreground: #500724;
+  --secondary: #3a0a1e;
+  --secondary-foreground: #fff5f9;
+  --muted: #3a0a1e;
+  --muted-foreground: #d9a6bd;
+  --accent: #ec4899;
+  --accent-foreground: #ffffff;
   --destructive: #e57373;
-  --border: #2a2a2a;
-  --input: #2a2a2a;
-  --ring: #C9A24B;
+  --border: #3d0f22;
+  --input: #3d0f22;
+  --ring: #ec4899;
 }
 
 @layer base {
@@ -165,15 +165,19 @@
     box-shadow: 0 10px 30px -10px color-mix(in oklab, var(--accent) 70%, transparent);
   }
 
+  /* Botão escuro da loja agora em rosa principal (pedido da cliente:
+     nada de vinho escuro em botões do storefront) */
   .btn-dark {
-    background: var(--primary);
-    color: var(--primary-foreground);
+    background: var(--accent);
+    color: var(--accent-foreground);
     transition: all .25s ease;
   }
   .btn-dark:hover {
     transform: translateY(-1px);
-    box-shadow: 0 10px 30px -10px rgba(0,0,0,.4);
+    box-shadow: 0 10px 30px -10px color-mix(in oklab, var(--accent) 65%, transparent);
   }
+
+  html { scroll-behavior: smooth; }
 
   .card-product {
     background: var(--card);
@@ -184,7 +188,7 @@
   }
   .card-product:hover {
     transform: translateY(-4px);
-    box-shadow: 0 24px 60px -20px rgba(10,10,10,.18);
+    box-shadow: 0 24px 60px -20px rgba(219, 39, 119, 0.22);
     border-color: color-mix(in oklab, var(--accent) 50%, var(--border));
   }
 
@@ -223,9 +227,16 @@
     width: max-content;
     animation: marquee 28s linear infinite;
   }
+  /* Microinteração: pausa a faixa deslizante quando o mouse está em cima */
+  .marquee-track:hover { animation-play-state: paused; }
   @keyframes marquee {
     0% { transform: translateX(0); }
     100% { transform: translateX(-50%); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .marquee-track { animation: none; }
+    .fade-in { animation: none; }
+    html { scroll-behavior: auto; }
   }
 
   .fade-in { animation: fadeIn .6s ease both; }

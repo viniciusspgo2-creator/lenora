@@ -194,7 +194,7 @@ export const DEMO_PRODUCTS: DemoProduct[] = [
     description: 'Tomara que caixa em cetim com brilho sutil. Elegância pra festas e ocasiões especiais.',
     colors: [
       { name: 'Preto', hex: '#0a0a0a' },
-      { name: 'Dourado', hex: '#c9a24b' },
+      { name: 'Rosa', hex: '#db2777' },
       { name: 'Off-white', hex: '#f6f4f0' },
     ],
     sizes: [

@@ -1,17 +1,26 @@
 // HomeView (Loja Lenora) — versão moderna e direta.
-// Hero só com headline estratégica (sem imagem), marquee de trust,
-// categorias em círculos com scroll horizontal, destaques, novidades,
-// promoções, newsletter e CTA final. Sem editorial preto, sem
-// depoimentos, sem cards de info com ícones.
+// Hero estilo "perfil de loja" (logo, localização, produtos, coleções, seguir),
+// categorias em círculos com scroll horizontal, destaques,
+// novidades, promoções e CTA final.
 'use client'
-import { useRef, useState } from 'react'
+import { useRef } from 'react'
 import { motion } from 'framer-motion'
-import { toast } from 'sonner'
-import { ArrowRight, ChevronLeft, ChevronRight, Heart, Mail, Send, Truck } from 'lucide-react'
+import {
+  ArrowRight,
+  BadgeCheck,
+  ChevronLeft,
+  ChevronRight,
+  Clock,
+  Heart,
+  Layers,
+  MapPin,
+  ShoppingBag,
+  Truck,
+  UserPlus,
+} from 'lucide-react'
 import type { SiteSettings } from '@/lib/settings'
 import { useViewNav } from '@/lib/nav'
 import { ProductCard, type ProductCardData } from '@/components/product-card'
-import { Input } from '@/components/ui/input'
 
 export type CategoryData = {
   id: string
@@ -26,10 +35,14 @@ type Props = {
   categories: CategoryData[]
   newProducts: ProductCardData[]
   onSale: ProductCardData[]
+  productCount: number
+  categoryCount: number
 }
 
-const MARQUEE =
-  'ENVIO PARA TODO BRASIL · COMPRA SEGURA · ATENDIMENTO 100% ONLINE · ATENDIMENTO PERSONALIZADO · '
+// Formata números grandes no padrão brasileiro (1.529.851)
+function formatCount(n: number): string {
+  return n.toLocaleString('pt-BR')
+}
 
 export function HomeView({
   settings,
@@ -37,22 +50,11 @@ export function HomeView({
   categories,
   newProducts,
   onSale,
+  productCount,
+  categoryCount,
 }: Props) {
   const nav = useViewNav()
-  const [email, setEmail] = useState('')
   const catRailRef = useRef<HTMLDivElement>(null)
-
-  const subscribe = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
-      toast.error('Por favor, informe um email válido.')
-      return
-    }
-    toast.success('Inscrição confirmada!', {
-      description: 'Você receberá lançamentos e ofertas exclusivas da Loja Lenora.',
-    })
-    setEmail('')
-  }
 
   // Scroll suave da trilha de categorias (botões laterais no desktop)
   const scrollCats = (dir: 1 | -1) => {
@@ -63,21 +65,19 @@ export function HomeView({
 
   return (
     <div className="fade-in">
-      {/* ───────────────────────── HERO com banner ───────────────────────── */}
+      {/* ───────────────────────── HERO estilo perfil de loja ───────────────────────── */}
       <section className="relative overflow-hidden bg-background">
-        {/* Glow dourado de fundo */}
-        <div className="pointer-events-none absolute left-1/2 top-0 h-[420px] w-[820px] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(201,162,75,0.16),transparent)] blur-2xl" />
-        <div className="container-lenora relative flex flex-col items-center gap-6 py-6 text-center md:py-8 lg:py-10">
-          {/* H1 crawlable (sr-only) — o banner é imagem com texto, então o Google
-              precisa de um H1 real em HTML. Conteúdo otimizado pra palavra-chave. */}
-          <h1 className="sr-only">
-            Loja Lenora — Moda Feminina: cropped, blusa, body, regata, top
-            canelado e tomara que caixa. Peças com curadoria, compra segura,
-            envio para todo Brasil e atendimento 100% online e personalizado.
-          </h1>
-
-          {/* Bloco SEO crawlable (sr-only) — conteúdo pra Google ler o que é a loja */}
+        {/* Glow rosa de fundo */}
+        <div className="pointer-events-none absolute left-1/2 top-0 h-[420px] w-[820px] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(219,39,119,0.10),transparent)] blur-2xl" />
+        <div className="container-lenora relative py-6 md:py-10">
+          {/* Bloco SEO crawlable (sr-only) — conteúdo pra Google ler o que é a loja.
+              O H1 visível agora é o nome da loja no card de perfil. */}
           <div className="sr-only">
+            <h1>
+              Loja Lenora — Moda Feminina: cropped, blusa, body, regata, top
+              canelado e tomara que caixa. Peças com curadoria, compra segura,
+              envio para todo Brasil e atendimento 100% online e personalizado.
+            </h1>
             <p>
               A Loja Lenora é um catálogo digital de moda feminina premium
               com curadoria de peças atemporais. Trabalhamos com as categorias:
@@ -94,66 +94,122 @@ export function HomeView({
             </p>
           </div>
 
-          {/* Banner responsivo: desktop wide / mobile quadrado, bordas arredondadas — maior possível */}
+          {/* Card de perfil da loja (desktop + mobile) — sem imagem de banner */}
           <motion.div
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: [0.2, 0.7, 0.2, 1] }}
-            className="w-full"
+            className="mx-auto w-full max-w-4xl overflow-hidden rounded-2xl border border-border bg-card shadow-[0_24px_60px_-24px_rgba(80,7,36,0.25)]"
           >
-            <div className="group relative overflow-hidden rounded-[1.25rem] border border-border bg-muted shadow-[0_30px_70px_-25px_rgba(10,10,10,0.35)] ring-1 ring-black/5 transition-all duration-500 hover:shadow-[0_30px_80px_-20px_rgba(201,162,75,0.45)] sm:rounded-[1.75rem]">
-              <picture>
-                {/* Mobile: imagem quadrada */}
-                <source media="(max-width: 768px)" srcSet="/uploads/hero-mobile.webp" />
-                {/* Desktop: imagem wide em resolução cheia (LCP) */}
-                <img
-                  src="/uploads/hero-desktop.webp"
-                  alt="Loja Lenora — Moda Feminina · Seja Bem-vinda · Cropped, blusa, body, regata, top canelado e tomara que caixa · Enviamos para todo Brasil"
-                  width={1600}
-                  height={686}
-                  fetchPriority="high"
-                  decoding="async"
-                  className="block aspect-square w-full object-cover md:aspect-[1600/686]"
-                  draggable={false}
-                />
-              </picture>
-              {/* Highlight dourado sutil no hover */}
-              <div className="pointer-events-none absolute inset-0 rounded-[inherit] ring-1 ring-inset ring-accent/0 transition-all duration-500 group-hover:ring-accent/30" />
+            {/* Topo: logo + nome + localização + botão seguir */}
+            <div className="flex flex-col gap-5 p-5 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:p-7">
+              <div className="flex items-center gap-4">
+                {/* Logo circular com monograma */}
+                <div className="relative shrink-0">
+                  <span className="flex size-16 items-center justify-center rounded-full bg-gradient-to-br from-accent to-[#9d174d] text-2xl font-extrabold text-white shadow-[0_10px_24px_-8px_rgba(219,39,119,0.6)] sm:size-20 sm:text-3xl">
+                    L
+                  </span>
+                  <motion.span
+                    animate={{ scale: [1, 1.3, 1] }}
+                    transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+                    className="absolute -bottom-0.5 -right-0.5 flex size-5 items-center justify-center rounded-full bg-card sm:size-6"
+                  >
+                    <span className="size-2 rounded-full bg-accent sm:size-2.5" />
+                  </motion.span>
+                </div>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-1.5">
+                    <p className="truncate text-xl font-extrabold tracking-tight sm:text-2xl">
+                      Loja Lenora
+                    </p>
+                    <BadgeCheck className="size-4 shrink-0 text-accent sm:size-5" strokeWidth={2} />
+                  </div>
+                  <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground sm:text-sm">
+                    <MapPin className="size-3.5 shrink-0 text-accent" strokeWidth={2} />
+                    Goiânia • GO — Loja Online
+                  </p>
+                </div>
+              </div>
+
+              {/* Botão seguir (abre o Instagram da loja) */}
+              <motion.a
+                href={`https://instagram.com/${settings.contact.instagram?.replace(/^@/, '')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                whileTap={{ scale: 0.96 }}
+                className="btn-gold inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-full px-5 text-xs font-bold uppercase tracking-[0.14em] transition-all sm:h-11 sm:px-6"
+              >
+                <UserPlus className="h-4 w-4" strokeWidth={2.2} />
+                Seguir
+              </motion.a>
+            </div>
+
+            {/* Estatísticas: produtos + coleções */}
+            <div className="grid grid-cols-2 border-t border-border">
+              <motion.button
+                onClick={() => nav({ view: 'shop' })}
+                whileTap={{ scale: 0.97 }}
+                className="group flex flex-col items-center gap-0.5 py-4 transition-colors hover:bg-muted/60 sm:py-5"
+              >
+                <span className="flex items-center gap-1.5 text-lg font-extrabold tabular-nums sm:text-2xl">
+                  {formatCount(productCount)}
+                  <ShoppingBag className="size-4 text-accent transition-transform group-hover:scale-110 sm:size-5" strokeWidth={2} />
+                </span>
+                <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground sm:text-[11px]">
+                  Produtos
+                </span>
+              </motion.button>
+              <div className="flex flex-col items-center gap-0.5 border-l border-border py-4 sm:py-5">
+                <span className="flex items-center gap-1.5 text-lg font-extrabold tabular-nums sm:text-2xl">
+                  {formatCount(categoryCount)}
+                  <Layers className="size-4 text-accent transition-transform group-hover:scale-110 sm:size-5" strokeWidth={2} />
+                </span>
+                <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground sm:text-[11px]">
+                  Coleções
+                </span>
+              </div>
+            </div>
+
+            {/* Faixa de informações rápidas (rosa bebê) */}
+            <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 border-t border-border bg-secondary/70 px-5 py-3.5 text-[11px] font-medium text-primary sm:justify-between sm:px-7 sm:text-xs">
+              <span className="flex items-center gap-1.5">
+                <Truck className="size-3.5 text-accent" strokeWidth={2} />
+                Envio para todo o Brasil
+              </span>
+              <span className="hidden items-center gap-1.5 sm:flex">
+                <Clock className="size-3.5 text-accent" strokeWidth={2} />
+                Atendimento das 9h às 17h
+              </span>
+              <span className="flex items-center gap-1.5">
+                <BadgeCheck className="size-3.5 text-accent" strokeWidth={2} />
+                Compra segura via WhatsApp
+              </span>
             </div>
           </motion.div>
 
-          {/* CTA buttons abaixo do banner */}
+          {/* CTA buttons abaixo do card */}
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="flex flex-wrap items-center justify-center gap-3"
+            className="mt-7 flex flex-wrap items-center justify-center gap-3"
           >
-            <button
+            <motion.button
               onClick={() => nav({ view: 'shop' })}
-              className="btn-gold inline-flex h-12 items-center gap-2 rounded-md px-8 text-sm font-semibold uppercase tracking-[0.18em]"
+              whileTap={{ scale: 0.96 }}
+              className="btn-gold inline-flex h-12 items-center gap-2 rounded-full px-8 text-sm font-semibold uppercase tracking-[0.18em]"
             >
               Explorar coleção
               <ArrowRight className="h-4 w-4" />
-            </button>
-            <button
+            </motion.button>
+            <motion.button
               onClick={() => nav({ view: 'shop', sort: 'newest' })}
-              className="inline-flex h-12 items-center gap-2 rounded-md border border-border bg-background px-8 text-sm font-semibold uppercase tracking-[0.18em] text-foreground transition-colors hover:border-accent hover:text-accent"
+              whileTap={{ scale: 0.96 }}
+              className="inline-flex h-12 items-center gap-2 rounded-full border border-border bg-background px-8 text-sm font-semibold uppercase tracking-[0.18em] text-foreground transition-colors hover:border-accent hover:text-accent"
             >
               Novidades
-            </button>
+            </motion.button>
           </motion.div>
-        </div>
-      </section>
-
-      {/* ───────────────────────── MARQUEE STRIP ───────────────────────── */}
-      <section className="overflow-hidden bg-primary text-primary-foreground">
-        <div className="marquee-track py-3 text-[11px] font-semibold uppercase tracking-[0.22em]">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <span key={i} aria-hidden={i > 0} className="text-accent">
-              {MARQUEE}
-            </span>
-          ))}
         </div>
       </section>
 
@@ -202,10 +258,11 @@ export function HomeView({
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.35, delay: i * 0.04 }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={() => nav({ view: 'shop', category: c.slug })}
-                  className="flex w-28 shrink-0 flex-col items-center gap-3 sm:w-32 md:w-36"
+                  className="group flex w-28 shrink-0 flex-col items-center gap-3 sm:w-32 md:w-36"
                 >
-                  <span className="relative size-28 shrink-0 overflow-hidden rounded-full border border-border bg-muted transition-all duration-300 group-hover:border-accent group-hover:shadow-[0_14px_30px_-12px_rgba(201,162,75,0.5)] sm:size-32 md:size-36">
+                  <span className="relative size-28 shrink-0 overflow-hidden rounded-full border border-border bg-muted transition-all duration-300 group-hover:scale-[1.04] group-hover:border-accent group-hover:shadow-[0_14px_30px_-12px_rgba(219,39,119,0.4)] sm:size-32 md:size-36">
                     {c.image ? (
                       <img
                         src={c.image}
@@ -271,53 +328,9 @@ export function HomeView({
         </section>
       )}
 
-      {/* ───────────────────────── NEWSLETTER ───────────────────────── */}
-      <section className="container-lenora py-14 md:py-16">
-        <div className="relative overflow-hidden rounded-lg border border-border bg-background p-8 md:p-12">
-          <div className="pointer-events-none absolute -right-10 -top-10 size-48 rounded-full bg-[radial-gradient(closest-side,rgba(201,162,75,0.18),transparent)] blur-xl" />
-          <div className="gold-line absolute left-0 top-0 h-full w-px" />
-          <div className="relative flex flex-col items-center gap-5 text-center">
-            <span className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.25em] text-accent">
-              <Mail className="h-4 w-4" />
-              Newsletter
-            </span>
-            <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-              Receba lançamentos
-            </h2>
-            <p className="max-w-md text-sm text-muted-foreground">
-              Inscreva-se para receber as novidades, ofertas exclusivas e
-              looks curados pela Lenora antes de todo mundo.
-            </p>
-            <form
-              onSubmit={subscribe}
-              className="flex w-full max-w-md flex-col gap-2 sm:flex-row"
-            >
-              <Input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Seu melhor email"
-                aria-label="Email"
-                className="h-12 flex-1"
-              />
-              <button
-                type="submit"
-                className="btn-gold inline-flex h-12 items-center justify-center gap-2 rounded-md px-6 text-sm font-semibold uppercase tracking-widest"
-              >
-                <Send className="h-4 w-4" />
-                Inscrever
-              </button>
-            </form>
-            <p className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
-              Sem spam. Cancele quando quiser.
-            </p>
-          </div>
-        </div>
-      </section>
-
       {/* ───────────────────────── CTA FINAL ───────────────────────── */}
-      <section className="container-lenora pb-16 md:pb-20">
-        <div className="relative overflow-hidden rounded-lg border-2 border-primary bg-background p-8 text-center md:p-12">
+      <section className="container-lenora pt-14 pb-16 md:pt-16 md:pb-20">
+        <div className="relative mx-auto max-w-4xl overflow-hidden rounded-2xl border-2 border-primary bg-background p-8 text-center shadow-[0_24px_60px_-24px_rgba(80,7,36,0.25)] md:p-12">
           <div className="flex flex-col items-center gap-5">
             <span className="inline-flex size-14 items-center justify-center rounded-full bg-accent text-accent-foreground">
               <Truck className="h-6 w-6" strokeWidth={2} />
@@ -332,7 +345,7 @@ export function HomeView({
             <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
               <button
                 onClick={() => nav({ view: 'shop' })}
-                className="btn-dark inline-flex h-12 items-center gap-2 rounded-md px-7 text-sm font-semibold uppercase tracking-[0.18em]"
+                className="btn-gold inline-flex h-12 items-center gap-2 rounded-md px-7 text-sm font-semibold uppercase tracking-[0.18em]"
               >
                 Explorar produtos
                 <ArrowRight className="h-4 w-4" />

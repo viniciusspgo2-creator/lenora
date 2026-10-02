@@ -33,8 +33,8 @@ const COLOR_KEYS: { key: keyof SiteSettings['colors']; label: string }[] = [
   { key: 'textMuted', label: 'Texto suave' },
   { key: 'primary', label: 'Primária (preto)' },
   { key: 'primaryForeground', label: 'Texto sobre primária' },
-  { key: 'accent', label: 'Dourado' },
-  { key: 'accentForeground', label: 'Texto sobre dourado' },
+  { key: 'accent', label: 'Rosa principal' },
+  { key: 'accentForeground', label: 'Texto sobre o rosa' },
   { key: 'border', label: 'Bordas' },
 ]
 

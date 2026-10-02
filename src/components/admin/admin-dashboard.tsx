@@ -213,7 +213,7 @@ export function AdminDashboard({ settings }: { settings: SiteSettings }) {
                     tick={{ fontSize: 10, fill: 'var(--muted-foreground)' }}
                   />
                   <Tooltip
-                    cursor={{ fill: 'rgba(201,162,75,.08)' }}
+                    cursor={{ fill: 'rgba(219,39,119,.08)' }}
                     contentStyle={{
                       background: 'var(--popover)',
                       border: '1px solid var(--border)',

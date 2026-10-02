@@ -78,7 +78,8 @@ export async function generateMetadata(): Promise<Metadata> {
         "max-video-preview": -1,
       },
     },
-    icons: { icon: "/logo.svg" },
+    // Favicon: src/app/{favicon.ico, icon.png, apple-icon.png} são
+    // detectados automaticamente pelo App Router (file convention).
     other: {
       "theme-color": s.colors.accent,
       author: s.brandName,
@@ -101,7 +102,7 @@ export default async function RootLayout({
   const a = settings.analytics;
 
   return (
-    <html lang="pt-BR" suppressHydrationWarning>
+    <html lang="pt-BR" suppressHydrationWarning data-scroll-behavior="smooth">
       <head>
         {/* JSON-LD: Organization + WebSite (com SearchAction) + LocalBusiness/ClothingStore */}
         <script

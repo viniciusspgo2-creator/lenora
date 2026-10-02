@@ -152,7 +152,7 @@ export function ContactView({ settings }: Props) {
                   href={c.href}
                   target="_blank"
                   rel="noreferrer"
-                  className="group flex items-center gap-4 rounded-lg border border-border bg-background p-4 transition-all hover:border-accent hover:shadow-[0_10px_30px_-12px_rgba(201,162,75,0.4)]"
+                  className="group flex items-center gap-4 rounded-lg border border-border bg-background p-4 transition-all hover:border-accent hover:shadow-[0_10px_30px_-12px_rgba(219,39,119,0.3)]"
                 >
                   {content}
                   <ArrowRight className="ml-auto size-4 text-muted-foreground transition-transform group-hover:translate-x-1 group-hover:text-accent" />

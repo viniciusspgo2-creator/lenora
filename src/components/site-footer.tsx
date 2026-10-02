@@ -1,11 +1,12 @@
-// Site Footer (Loja Lenora) — marquee + 4 colunas + trust badges + bottom bar.
+// Site Footer (Loja Lenora) — tons de rosa claro: marquee rosa bebê +
+// 4 colunas + trust badges + bottom bar, tudo em fundo claro.
 'use client'
 import { Clock, Instagram, Mail, Phone } from 'lucide-react'
 import type { SiteSettings } from '@/lib/settings'
 import { useViewNav } from '@/lib/nav'
 import { maskPhone } from '@/lib/utils-lenora'
 
-const MARQUEE = 'ENVIO PARA TODO BRASIL · COMPRA SEGURA · ATENDIMENTO PERSONALIZADO · MODA FEMININA PREMIUM · '
+const MARQUEE = 'ENVIO PARA TODO O BRASIL · ATENDIMENTO PELO WHATSAPP · LOJA ONLINE · GOIÂNIA/GO · COMPRA SEGURA · ATENDIMENTO PERSONALIZADO · '
 
 const POLICIES: { label: string; policy: string }[] = [
   { label: 'Trocas e Devoluções', policy: 'trocas' },
@@ -91,10 +92,10 @@ export function SiteFooter({ settings }: { settings: SiteSettings }) {
   ]
 
   return (
-    <footer className="mt-auto bg-primary text-primary-foreground">
-      {/* Marquee de mensagens premium */}
-      <div className="overflow-hidden border-b border-white/10 bg-accent text-accent-foreground">
-        <div className="marquee-track py-2.5 text-[11px] uppercase tracking-[0.3em]">
+    <footer className="mt-auto bg-secondary/50 text-foreground">
+      {/* Marquee de mensagens premium (rosa principal, texto branco) */}
+      <div className="overflow-hidden bg-accent text-accent-foreground">
+        <div className="marquee-track py-2.5 text-[11px] font-semibold uppercase tracking-[0.3em]">
           {Array.from({ length: 4 }).map((_, i) => (
             <span key={i} aria-hidden={i > 0}>
               {MARQUEE}
@@ -104,15 +105,15 @@ export function SiteFooter({ settings }: { settings: SiteSettings }) {
       </div>
 
       {/* Trust badges */}
-      <div className="border-b border-white/10">
+      <div className="border-b border-border">
         <div className="container-lenora grid grid-cols-2 gap-4 py-8 md:grid-cols-4">
           {trust.map((t) => (
             <div
               key={t.label}
-              className="flex items-center gap-3 text-accent"
+              className="flex items-center gap-3 text-accent transition-all duration-300 hover:-translate-y-0.5 hover:text-primary"
             >
               <t.icon />
-              <span className="text-xs uppercase tracking-widest text-primary-foreground/85">
+              <span className="text-xs uppercase tracking-widest text-foreground/75 transition-colors">
                 {t.label}
               </span>
             </div>
@@ -125,10 +126,10 @@ export function SiteFooter({ settings }: { settings: SiteSettings }) {
         {/* Col 1 — brand */}
         <div className="space-y-4">
           <div className="flex items-baseline gap-1.5">
-            <span className="font-serif text-3xl uppercase tracking-[0.3em]">Lenora</span>
+            <span className="font-serif text-3xl uppercase tracking-[0.3em] text-foreground">Lenora</span>
             <span className="size-2 rounded-full bg-accent" />
           </div>
-          <p className="max-w-xs font-serif text-base italic text-primary-foreground/75">
+          <p className="max-w-xs font-serif text-base italic text-muted-foreground">
             {settings.brandTagline}
           </p>
           <div className="gold-line w-20" />
@@ -141,7 +142,7 @@ export function SiteFooter({ settings }: { settings: SiteSettings }) {
             <li>
               <a
                 href={`tel:+${phone}`}
-                className="flex items-center gap-3 text-primary-foreground/85 transition-colors hover:text-accent"
+                className="flex items-center gap-3 text-foreground/75 transition-colors hover:text-accent"
               >
                 <Phone className="h-4 w-4" strokeWidth={1.5} />
                 {masked}
@@ -150,7 +151,7 @@ export function SiteFooter({ settings }: { settings: SiteSettings }) {
             <li>
               <a
                 href={`mailto:${settings.contact.email}`}
-                className="flex items-center gap-3 text-primary-foreground/85 transition-colors hover:text-accent"
+                className="flex items-center gap-3 text-foreground/75 transition-colors hover:text-accent"
               >
                 <Mail className="h-4 w-4" strokeWidth={1.5} />
                 {settings.contact.email}
@@ -161,13 +162,13 @@ export function SiteFooter({ settings }: { settings: SiteSettings }) {
                 href={`https://instagram.com/${instagram}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 text-primary-foreground/85 transition-colors hover:text-accent"
+                className="flex items-center gap-3 text-foreground/75 transition-colors hover:text-accent"
               >
                 <Instagram className="h-4 w-4" strokeWidth={1.5} />
                 @{instagram}
               </a>
             </li>
-            <li className="flex items-center gap-3 text-primary-foreground/85">
+            <li className="flex items-center gap-3 text-foreground/75">
               <Clock className="h-4 w-4" strokeWidth={1.5} />
               {settings.contact.hours}
             </li>
@@ -181,7 +182,7 @@ export function SiteFooter({ settings }: { settings: SiteSettings }) {
             <li>
               <button
                 onClick={() => nav({ view: 'home' })}
-                className="link-underline text-primary-foreground/85 transition-colors hover:text-accent"
+                className="link-underline text-foreground/75 transition-colors hover:text-accent"
               >
                 Início
               </button>
@@ -189,7 +190,7 @@ export function SiteFooter({ settings }: { settings: SiteSettings }) {
             <li>
               <button
                 onClick={() => nav({ view: 'shop' })}
-                className="link-underline text-primary-foreground/85 transition-colors hover:text-accent"
+                className="link-underline text-foreground/75 transition-colors hover:text-accent"
               >
                 Loja
               </button>
@@ -197,7 +198,7 @@ export function SiteFooter({ settings }: { settings: SiteSettings }) {
             <li>
               <button
                 onClick={() => nav({ view: 'favorites' })}
-                className="link-underline text-primary-foreground/85 transition-colors hover:text-accent"
+                className="link-underline text-foreground/75 transition-colors hover:text-accent"
               >
                 Favoritos
               </button>
@@ -205,7 +206,7 @@ export function SiteFooter({ settings }: { settings: SiteSettings }) {
             <li>
               <button
                 onClick={() => nav({ view: 'account' })}
-                className="link-underline text-primary-foreground/85 transition-colors hover:text-accent"
+                className="link-underline text-foreground/75 transition-colors hover:text-accent"
               >
                 Minha Conta
               </button>
@@ -221,7 +222,7 @@ export function SiteFooter({ settings }: { settings: SiteSettings }) {
               <li key={p.policy}>
                 <button
                   onClick={() => nav({ view: 'policies', policy: p.policy })}
-                  className="link-underline text-primary-foreground/85 transition-colors hover:text-accent"
+                  className="link-underline text-foreground/75 transition-colors hover:text-accent"
                 >
                   {p.label}
                 </button>
@@ -242,13 +243,13 @@ export function SiteFooter({ settings }: { settings: SiteSettings }) {
       </div>
 
       {/* Bottom bar */}
-      <div className="border-t border-white/10 bg-black/30">
-        <div className="container-lenora flex flex-col items-center justify-between gap-4 py-5 text-xs text-primary-foreground/60 md:flex-row">
+      <div className="border-t border-border bg-background/70">
+        <div className="container-lenora flex flex-col items-center justify-between gap-4 py-5 text-xs text-muted-foreground md:flex-row">
           <p>
             © {year} Loja Lenora. CNPJ 00.000.000/0001-00 · {settings.contact.hours}
           </p>
           <div className="flex items-center gap-2">
-            <span className="mr-2 uppercase tracking-widest text-primary-foreground/50">
+            <span className="mr-2 uppercase tracking-widest text-muted-foreground/80">
               Pagamento
             </span>
             <VisaBadge />
