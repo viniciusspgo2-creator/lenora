@@ -3,7 +3,7 @@
 'use client'
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Plus, Pencil, Trash2, FolderTree, Loader2, Save } from 'lucide-react'
+import { Plus, Pencil, Trash2, FolderTree, Loader2, Save, Upload, X } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -65,6 +65,39 @@ export function AdminCategories() {
   const [form, setForm] = useState<FormData>(EMPTY)
   const [deleteId, setDeleteId] = useState<string | null>(null)
   const [deleteName, setDeleteName] = useState('')
+  const [uploading, setUploading] = useState(false)
+  const [dragOver, setDragOver] = useState(false)
+
+  // Upload da foto de capa (converte para WebP no servidor via /api/admin/upload)
+  async function uploadImage(files: FileList | File[]) {
+    const arr = Array.from(files).filter((f) => f.type.startsWith('image/'))
+    if (arr.length === 0) return
+    setUploading(true)
+    try {
+      const fd = new FormData()
+      arr.slice(0, 1).forEach((f) => fd.append('file', f))
+      const r = await fetch('/api/admin/upload', { method: 'POST', body: fd })
+      const contentType = r.headers.get('content-type') ?? ''
+      if (!contentType.includes('application/json')) {
+        await r.text()
+        throw new Error(
+          r.status === 404
+            ? 'A rota de upload não foi encontrada no servidor.'
+            : `Falha no upload (HTTP ${r.status}).`,
+        )
+      }
+      const data = await r.json()
+      if (!r.ok) throw new Error(data?.error ?? 'Falha no upload')
+      const url: string | undefined = data.urls?.[0]
+      if (!url) throw new Error('Servidor não retornou a URL da imagem.')
+      setForm((f) => ({ ...f, image: url }))
+      toast.success('Imagem enviada!')
+    } catch (e) {
+      toast.error((e as Error).message)
+    } finally {
+      setUploading(false)
+    }
+  }
 
   const listQ = useQuery<{ items: Category[] }>({
     queryKey: ['admin', 'categories'],
@@ -326,15 +359,85 @@ export function AdminCategories() {
             </div>
             <div>
               <Label className="mb-1.5 block text-xs uppercase tracking-wider">
-                URL da imagem
+                Foto da capa
               </Label>
+              {form.image ? (
+                <div className="flex items-center gap-3 rounded-md border border-border bg-background p-3">
+                  <img
+                    src={form.image}
+                    alt="Capa da categoria"
+                    className="size-14 shrink-0 rounded-md border border-border object-cover"
+                  />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-xs text-muted-foreground">
+                      {form.image}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setForm((f) => ({ ...f, image: '' }))}
+                      className="mt-1 inline-flex items-center gap-1 text-[11px] font-semibold text-destructive transition-colors hover:text-destructive/80"
+                    >
+                      <X className="size-3" />
+                      Remover imagem
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <label
+                  onDragOver={(e) => {
+                    e.preventDefault()
+                    setDragOver(true)
+                  }}
+                  onDragLeave={() => setDragOver(false)}
+                  onDrop={(e) => {
+                    e.preventDefault()
+                    setDragOver(false)
+                    if (e.dataTransfer.files.length > 0) {
+                      uploadImage(e.dataTransfer.files)
+                    }
+                  }}
+                  className={`flex cursor-pointer flex-col items-center justify-center gap-1.5 rounded-md border-2 border-dashed p-5 text-center transition ${
+                    dragOver
+                      ? 'border-accent bg-accent/10'
+                      : 'border-border hover:border-accent/50'
+                  }`}
+                >
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="sr-only"
+                    onChange={(e) => {
+                      if (e.target.files) uploadImage(e.target.files)
+                      e.currentTarget.value = ''
+                    }}
+                  />
+                  {uploading ? (
+                    <>
+                      <Loader2 className="size-5 animate-spin text-accent" />
+                      <span className="text-xs uppercase tracking-wider text-muted-foreground">
+                        Enviando…
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="size-5 text-accent" />
+                      <p className="text-sm font-medium">
+                        Clique para enviar a foto da capa
+                      </p>
+                      <p className="text-[11px] text-muted-foreground">
+                        JPG/PNG · convertida para WebP no upload
+                      </p>
+                    </>
+                  )}
+                </label>
+              )}
               <Input
                 value={form.image}
                 onChange={(e) =>
                   setForm((f) => ({ ...f, image: e.target.value }))
                 }
-                placeholder="/uploads/foto.webp"
-                className="h-11"
+                placeholder="Ou cole a URL da imagem (ex: /uploads/foto.webp)"
+                className="mt-2 h-11"
               />
             </div>
             <div className="grid grid-cols-2 gap-3">

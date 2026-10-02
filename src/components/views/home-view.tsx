@@ -104,11 +104,13 @@ export function HomeView({
             {/* Topo: logo + nome + localização + botão seguir */}
             <div className="flex flex-col gap-5 p-5 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:p-7">
               <div className="flex items-center gap-4">
-                {/* Logo circular com monograma */}
+                {/* Logo circular com a arte oficial LENORA */}
                 <div className="relative shrink-0">
-                  <span className="flex size-16 items-center justify-center rounded-full bg-gradient-to-br from-accent to-[#9d174d] text-2xl font-extrabold text-white shadow-[0_10px_24px_-8px_rgba(219,39,119,0.6)] sm:size-20 sm:text-3xl">
-                    L
-                  </span>
+                  <img
+                    src="/logo-lenora.png"
+                    alt="Logo Lenora"
+                    className="size-16 rounded-full object-cover shadow-[0_10px_24px_-8px_rgba(219,39,119,0.6)] ring-1 ring-accent/25 sm:size-20"
+                  />
                   <motion.span
                     animate={{ scale: [1, 1.3, 1] }}
                     transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
