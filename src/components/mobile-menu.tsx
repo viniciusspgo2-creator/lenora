@@ -1,4 +1,4 @@
-// Mobile Menu (Loja Lenora) — Sheet lateral esquerda.
+// Mobile Menu (NINFA NAYANE) — Sheet lateral esquerda.
 // Lista categorias (mesma query do header) + links de navegação.
 'use client'
 import { useQuery } from '@tanstack/react-query'
@@ -49,13 +49,13 @@ export function MobileMenu() {
       <SheetContent side="left" className="w-[85%] gap-0 p-0 sm:max-w-sm">
         <SheetTitle className="sr-only">Menu de navegação</SheetTitle>
         <SheetDescription className="sr-only">
-          Categorias e links principais da Loja Lenora.
+          Categorias e links principais da NINFA NAYANE.
         </SheetDescription>
 
         {/* Brand no topo */}
         <div className="flex items-center justify-between border-b border-border px-5 py-4">
           <button onClick={() => go({ view: 'home' })} className="flex items-center gap-2">
-            <span className="text-2xl font-extrabold uppercase tracking-[0.2em]">Lenora</span>
+            <span className="text-2xl font-extrabold uppercase tracking-[0.2em]">NINFA NAYANE</span>
             <span className="size-2 rounded-full bg-accent" />
           </button>
         </div>

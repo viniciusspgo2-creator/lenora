@@ -1,4 +1,4 @@
-// Loja Lenora — page.tsx (server component)
+// NINFA NAYANE — page.tsx (server component)
 // Roteia por query param `view` para cada uma das views do storefront.
 // Busca dados iniciais via Prisma e os passa como props para as views client-side.
 // SEO: generateMetadata dinâmico por view + JSON-LD injetado por view.
@@ -82,7 +82,7 @@ export async function generateMetadata({
       title = `${p.name} — R$ ${p.price.toFixed(2).replace('.', ',')}`
       description =
         (p.description?.slice(0, 155) ?? settings.seo.description) +
-        ` ${p.name} na Loja Lenora. Compre pelo WhatsApp.`
+        ` ${p.name} na NINFA NAYANE. Compre pelo WhatsApp.`
       canonical = `?view=product&slug=${slug}`
       ogImage = p.images[0]?.url
     }
@@ -90,24 +90,24 @@ export async function generateMetadata({
     if (category) {
       const c = await db.category.findUnique({ where: { slug: category }, select: { name: true } }).catch(() => null)
       title = c ? `${c.name} — Coleção` : 'Catálogo de Moda Feminina'
-      description = `Coleção de ${c?.name ?? 'moda feminina'} na Loja Lenora. Cropped, blusa, body, regata e mais. Compra segura, envio para todo Brasil.`
+      description = `Coleção de ${c?.name ?? 'moda feminina'} na NINFA NAYANE. Cropped, blusa, body, regata e mais. Compra segura, envio para todo Brasil.`
       canonical = `?view=shop&category=${category}`
     } else if (sort === 'newest') {
       title = 'Novidades — Moda Feminina'
-      description = 'Recém-chegadas na Loja Lenora: as últimas peças de moda feminina. Cropped, blusa, body, regata, top e tomara que caixa.'
+      description = 'Recém-chegadas na NINFA NAYANE: as últimas peças de moda feminina. Cropped, blusa, body, regata, top e tomara que caixa.'
       canonical = `?view=shop&sort=newest`
     } else if (sort === 'featured') {
       title = 'Destaques — Moda Feminina'
-      description = 'Produtos em destaque na Loja Lenora. Selecionados pra você com curadoria e elegância.'
+      description = 'Produtos em destaque na NINFA NAYANE. Selecionados pra você com curadoria e elegância.'
       canonical = `?view=shop&sort=featured`
     } else {
       title = 'Catálogo de Moda Feminina'
-      description = 'Explore o catálogo de moda feminina da Loja Lenora. Filtre por categoria, preço, cor e tamanho. Compra segura via WhatsApp.'
+      description = 'Explore o catálogo de moda feminina da NINFA NAYANE. Filtre por categoria, preço, cor e tamanho. Compra segura via WhatsApp.'
       canonical = `?view=shop`
     }
   } else if (view === 'contact') {
     title = 'Contato'
-    description = 'Fale com a Loja Lenora pelo WhatsApp, e-mail ou Instagram. Atendimento 100% online das 9h às 17h. Envio para todo Brasil.'
+    description = 'Fale com a NINFA NAYANE pelo WhatsApp, e-mail ou Instagram. Atendimento 100% online das 9h às 17h. Envio para todo Brasil.'
     canonical = `?view=contact`
   } else if (view === 'policies') {
     const titles: Record<string, string> = {
@@ -118,11 +118,11 @@ export async function generateMetadata({
       cookies: 'Política de Cookies',
     }
     title = titles[policy ?? 'trocas'] ?? 'Políticas'
-    description = `${title} da Loja Lenora. Tire suas dúvidas sobre compras, envio, trocas, privacidade e termos de uso.`
+    description = `${title} da NINFA NAYANE. Tire suas dúvidas sobre compras, envio, trocas, privacidade e termos de uso.`
     canonical = `?view=policies&policy=${policy ?? 'trocas'}`
   } else if (q) {
     title = `Busca: ${q}`
-    description = `Resultados de busca por "${q}" na Loja Lenora — moda feminina premium.`
+    description = `Resultados de busca por "${q}" na NINFA NAYANE — moda feminina premium.`
     canonical = `?view=shop&q=${encodeURIComponent(q)}`
     noindex = true // páginas de busca não indexáveis
   } else {
@@ -384,7 +384,7 @@ export default async function Page({
           { name: p.name, url: `?view=product&slug=${p.slug}` },
         ]),
         webPageSchema(settings, {
-          name: `${p.name} — Loja Lenora`,
+          name: `${p.name} — NINFA NAYANE`,
           description: p.description.slice(0, 160),
           url: `?view=product&slug=${p.slug}`,
         }),
@@ -437,7 +437,7 @@ export default async function Page({
         { q: 'Como solicito uma troca?', a: 'Clique no botão “Solicitar troca pelo WhatsApp” e envie: número do pedido, nome completo, CPF e motivo.' },
       ],
       vendas: [
-        { q: 'Quais formas de pagamento a Loja Lenora aceita?', a: 'Pix, cartão de crédito (até 2x), débito e boleto. Pagamento combinado no WhatsApp.' },
+        { q: 'Quais formas de pagamento a NINFA NAYANE aceita?', a: 'Pix, cartão de crédito (até 2x), débito e boleto. Pagamento combinado no WhatsApp.' },
         { q: 'Qual o prazo de postagem?', a: '1 a 5 dias úteis após a confirmação do pagamento. Entrega via Correios conforme a região.' },
         { q: 'Como acompanho meu pedido?', a: 'Você recebe o código de rastreamento por e-mail e pode acompanhar na sua conta no site.' },
       ],
@@ -446,7 +446,7 @@ export default async function Page({
         { q: 'Como são tratados meus dados?', a: 'Conforme nossa Política de Privacidade e a LGPD (Lei nº 13.709/2018).' },
       ],
       privacidade: [
-        { q: 'Quais dados a Loja Lenora coleta?', a: 'Nome, telefone, e-mail, CEP e endereço de entrega, informados no checkout via WhatsApp.' },
+        { q: 'Quais dados a NINFA NAYANE coleta?', a: 'Nome, telefone, e-mail, CEP e endereço de entrega, informados no checkout via WhatsApp.' },
         { q: 'Posso excluir meus dados?', a: 'Sim. Solicite pelo WhatsApp ou e-mail; atendemos em até 15 dias corridos.' },
       ],
       cookies: [

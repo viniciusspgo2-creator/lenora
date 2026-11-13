@@ -1,4 +1,4 @@
-// Loja Lenora — Admin Settings.
+// NINFA NAYANE — Admin Settings.
 // Painel de configurações do site. Seções: Identidade, Cores (com
 // color picker live preview), Contato, Envio (métodos editáveis), SEO,
 // Admin (trocar senha). Cada seção tem seu próprio botão Salvar.
@@ -137,7 +137,7 @@ export function AdminSettings({ settings }: { settings: SiteSettings }) {
               value={brandName}
               onChange={(e) => setBrandName(e.target.value)}
               className="h-11"
-              placeholder="Loja Lenora"
+              placeholder="NINFA NAYANE"
             />
           </div>
           <div>
@@ -218,7 +218,7 @@ export function AdminSettings({ settings }: { settings: SiteSettings }) {
                 className="font-serif text-xl tracking-[0.15em]"
                 style={{ color: colors.primaryForeground }}
               >
-                LENORA
+                NINFA NAYANE
               </span>
               <span
                 className="rounded px-3 py-1 text-[10px] uppercase tracking-wider"
@@ -299,7 +299,7 @@ export function AdminSettings({ settings }: { settings: SiteSettings }) {
                 setContact((c) => ({ ...c, email: e.target.value }))
               }
               className="h-11"
-              placeholder="contato@lojalenora.com.br"
+              placeholder="contato@ninfanayane.com.br"
             />
           </Field>
           <Field label="Instagram (handle sem @)">
@@ -523,7 +523,7 @@ export function AdminSettings({ settings }: { settings: SiteSettings }) {
 
       <Separator />
       <p className="pb-6 text-center text-[11px] text-muted-foreground">
-        Loja Lenora · Painel administrativo · v1.0
+        NINFA NAYANE · Painel administrativo · v1.0
       </p>
     </div>
   )

@@ -1,4 +1,4 @@
-// HomeView (Loja Lenora) — versão moderna e direta.
+// HomeView (NINFA NAYANE) — versão moderna e direta.
 // Hero estilo "perfil de loja" (logo, localização, produtos, coleções, seguir),
 // categorias em círculos com scroll horizontal, destaques,
 // novidades, promoções e CTA final.
@@ -74,12 +74,12 @@ export function HomeView({
               O H1 visível agora é o nome da loja no card de perfil. */}
           <div className="sr-only">
             <h1>
-              Loja Lenora — Moda Feminina: cropped, blusa, body, regata, top
+              NINFA NAYANE — Moda Feminina: cropped, blusa, body, regata, top
               canelado e tomara que caixa. Peças com curadoria, compra segura,
               envio para todo Brasil e atendimento 100% online e personalizado.
             </h1>
             <p>
-              A Loja Lenora é um catálogo digital de moda feminina premium
+              A NINFA NAYANE é um catálogo digital de moda feminina premium
               com curadoria de peças atemporais. Trabalhamos com as categorias:
               cropped, blusa, body, blusa canelada, regata, top canelado e
               tomara que caixa. Atendimento 100% online das 9h às 17h, envio
@@ -104,11 +104,11 @@ export function HomeView({
             {/* Topo: logo + nome + localização + botão seguir */}
             <div className="flex flex-col gap-5 p-5 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:p-7">
               <div className="flex items-center gap-4">
-                {/* Logo circular com a arte oficial LENORA */}
+                {/* Logo circular com a arte oficial NINFA NAYANE */}
                 <div className="relative shrink-0">
                   <img
-                    src="/logo-lenora.png"
-                    alt="Logo Lenora"
+                    src="/logo-ninfa-nayane.png"
+                    alt="Logo NINFA NAYANE"
                     className="size-16 rounded-full object-cover shadow-[0_10px_24px_-8px_rgba(219,39,119,0.6)] ring-1 ring-accent/25 sm:size-20"
                   />
                   <motion.span
@@ -122,7 +122,7 @@ export function HomeView({
                 <div className="min-w-0">
                   <div className="flex items-center gap-1.5">
                     <p className="truncate text-xl font-extrabold tracking-tight sm:text-2xl">
-                      Loja Lenora
+                      NINFA NAYANE
                     </p>
                     <BadgeCheck className="size-4 shrink-0 text-accent sm:size-5" strokeWidth={2} />
                   </div>

@@ -1,11 +1,11 @@
-// AnnouncementBar (Loja Lenora) — faixa deslizante no topo absoluto do site,
+// AnnouncementBar (NINFA NAYANE) — faixa deslizante no topo absoluto do site,
 // acima do header, em rosa bebê. Mensagens institucionais com pausa no hover.
 'use client'
 import { motion } from 'framer-motion'
 
 // Mensagens profissionais (boas-vindas + WhatsApp + localização + envio Brasil)
 const MESSAGE =
-  'Bem-vindas à Loja Lenora! Dúvidas? Fale com a gente pelo WhatsApp · Loja online de Goiânia/GO com envio para todo o Brasil · Atendimento das 9h às 17h · '
+  'Bem-vindas à NINFA NAYANE! Dúvidas? Fale com a gente pelo WhatsApp · Loja online de Goiânia/GO com envio para todo o Brasil · Atendimento das 9h às 17h · '
 
 export function AnnouncementBar() {
   return (

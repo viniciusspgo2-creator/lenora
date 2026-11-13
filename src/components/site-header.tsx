@@ -1,4 +1,4 @@
-// Site Header (Loja Lenora) — sticky premium, glass, com navegação central.
+// Site Header (NINFA NAYANE) — sticky premium, glass, com navegação central.
 // Botão de carrinho em formato pill (estilo marketplaces): badge de itens +
 // "Seu carrinho" + total em R$ + ícone. Reativo via useCart.
 'use client'
@@ -72,7 +72,7 @@ export function SiteHeader({ settings }: { settings: SiteSettings }) {
             className="group flex items-baseline gap-1"
           >
             <span className="text-xl font-extrabold uppercase tracking-[0.2em] leading-none transition-colors group-hover:text-accent md:text-2xl md:tracking-[0.3em]">
-              Lenora
+              NINFA NAYANE
             </span>
             <motion.span
               animate={{ scale: [1, 1.25, 1] }}

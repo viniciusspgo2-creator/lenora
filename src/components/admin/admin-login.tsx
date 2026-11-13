@@ -1,4 +1,4 @@
-// Loja Lenora — Admin Login.
+// NINFA NAYANE — Admin Login.
 // Tela de autenticação simples: pede a senha admin e faz POST em /api/admin/login.
 // Em sucesso, recarrega para ?view=admin&tab=dashboard (o cookie já está setado pela API).
 'use client'
@@ -60,10 +60,10 @@ export function AdminLogin({ brand }: { brand: string }) {
             <span className="size-1.5 rounded-full bg-accent" />
           </div>
           <h1 className="font-serif text-5xl tracking-[0.08em]">
-            {brand || 'Lenora'}
+            {brand || 'NINFA NAYANE'}
           </h1>
           <p className="mt-3 text-sm text-muted-foreground">
-            Acesso restrito à equipe Lenora.
+            Acesso restrito à equipe NINFA NAYANE.
           </p>
         </div>
 

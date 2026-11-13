@@ -1,11 +1,11 @@
-// Loja Lenora — SEO infrastructure
+// NINFA NAYANE — SEO infrastructure
 // JSON-LD schema generators (pure, sync, server-side).
 // Each function returns a plain JS object to be `JSON.stringify`'d into
 // <script type="application/ld+json"> tags. The SiteSettings is read once
 // per request via getSettings() and passed in.
 //
 // URL strategy:
-// - All URLs in JSON-LD are absolute (https://lojalenora.com.br/?view=...).
+// - All URLs in JSON-LD are absolute (https://ninfanayane.com.br/?view=...).
 // - The base is taken from settings.seo.siteUrl. If empty, falls back to a
 //   relative URL (so the schema still emits something useful for debugging
 //   in dev). Search engines require absolute URLs for full validity.
@@ -99,7 +99,7 @@ export function organizationSchema(settings: SiteSettings) {
     telephone: telephone(settings),
     logo: {
       '@type': 'ImageObject',
-      url: absUrl(settings, '/logo.svg'),
+      url: absUrl(settings, '/logo-ninfa-nayane.png'),
     },
     sameAs: sameAs(settings),
     contactPoint: [
@@ -176,7 +176,7 @@ export function localBusinessSchema(settings: SiteSettings) {
     image: ogImage,
     logo: {
       '@type': 'ImageObject',
-      url: absUrl(settings, '/logo.svg'),
+      url: absUrl(settings, '/logo-ninfa-nayane.png'),
     },
     priceRange: '$$',
     address: {

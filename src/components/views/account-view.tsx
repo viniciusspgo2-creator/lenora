@@ -1,4 +1,4 @@
-// AccountView (Loja Lenora) — login/cadastro (Tabs) + dashboard com pedidos
+// AccountView (NINFA NAYANE) — login/cadastro (Tabs) + dashboard com pedidos
 // (timeline de status) + favoritos + logout.
 'use client'
 import { useState } from 'react'
@@ -373,7 +373,7 @@ function Dashboard({ settings, customer }: { settings: SiteSettings; customer: N
           </span>
           <div className="flex-1 text-left">
             <p className="font-serif text-base">Atendimento</p>
-            <p className="text-xs text-muted-foreground">Falar com a Lenora</p>
+            <p className="text-xs text-muted-foreground">Falar com a NINFA NAYANE</p>
           </div>
         </a>
       </div>

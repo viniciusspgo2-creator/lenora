@@ -1,4 +1,4 @@
-// Site Footer (Loja Lenora) — tons de rosa claro: marquee rosa bebê +
+// Site Footer (NINFA NAYANE) — tons de rosa claro: marquee rosa bebê +
 // 4 colunas + trust badges + bottom bar, tudo em fundo claro.
 'use client'
 import { Clock, Instagram, Mail, Phone } from 'lucide-react'
@@ -126,7 +126,7 @@ export function SiteFooter({ settings }: { settings: SiteSettings }) {
         {/* Col 1 — brand */}
         <div className="space-y-4">
           <div className="flex items-baseline gap-1.5">
-            <span className="font-serif text-3xl uppercase tracking-[0.3em] text-foreground">Lenora</span>
+            <span className="font-serif text-3xl uppercase tracking-[0.3em] text-foreground">NINFA NAYANE</span>
             <span className="size-2 rounded-full bg-accent" />
           </div>
           <p className="max-w-xs font-serif text-base italic text-muted-foreground">
@@ -246,7 +246,7 @@ export function SiteFooter({ settings }: { settings: SiteSettings }) {
       <div className="border-t border-border bg-background/70">
         <div className="container-lenora flex flex-col items-center justify-between gap-4 py-5 text-xs text-muted-foreground md:flex-row">
           <p>
-            © {year} Loja Lenora. CNPJ 35.036.534/0001-52 · {settings.contact.hours}
+            © {year} NINFA NAYANE. CNPJ 35.036.534/0001-52 · {settings.contact.hours}
           </p>
           <div className="flex items-center gap-2">
             <span className="mr-2 uppercase tracking-widest text-muted-foreground/80">

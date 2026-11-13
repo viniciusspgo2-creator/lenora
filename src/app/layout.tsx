@@ -25,7 +25,7 @@ const cormorant = Poppins({
 
 export async function generateMetadata(): Promise<Metadata> {
   const s = await getSettings();
-  const siteUrl = s.seo.siteUrl || "https://lojalenora.com.br";
+  const siteUrl = s.seo.siteUrl || "https://ninfanayane.com.br";
   const ogImage = absUrl(s, s.seo.ogImage || "/uploads/hero-desktop.webp");
   return {
     metadataBase: new URL(siteUrl),
