@@ -136,7 +136,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
       longitude: '-49.2643',
       areaServed: 'Brasil (envio para todo o território nacional) e Goiânia/região (Uber/Motoboy)',
       openingHours: 'Seg-Sex 09:00-17:00',
-      taxId: '00.000.000/0001-00',
+      taxId: '35.036.534/0001-52',
     },
     siteUrl: 'https://lojalenora.com.br',
     twitterHandle: 'loja.lenora',

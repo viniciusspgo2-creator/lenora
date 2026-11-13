@@ -246,7 +246,7 @@ export function SiteFooter({ settings }: { settings: SiteSettings }) {
       <div className="border-t border-border bg-background/70">
         <div className="container-lenora flex flex-col items-center justify-between gap-4 py-5 text-xs text-muted-foreground md:flex-row">
           <p>
-            © {year} Loja Lenora. CNPJ 00.000.000/0001-00 · {settings.contact.hours}
+            © {year} Loja Lenora. CNPJ 35.036.534/0001-52 · {settings.contact.hours}
           </p>
           <div className="flex items-center gap-2">
             <span className="mr-2 uppercase tracking-widest text-muted-foreground/80">

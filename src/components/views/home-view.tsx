@@ -189,6 +189,83 @@ export function HomeView({
             </div>
           </motion.div>
 
+          {/* ───────────────────────── CATEGORIAS (círculos, scroll horizontal) ───────────────────────── */}
+          {categories.length > 0 && (
+            <section className="pt-10 pb-4 md:pt-12 md:pb-5">
+              <div className="mb-6 flex items-end justify-between gap-4">
+                <div className="flex flex-col gap-1">
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.25em] text-accent">
+                    Coleções
+                  </span>
+                  <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+                    Compre por categoria
+                  </h2>
+                </div>
+                {/* Setas de navegação (desktop) */}
+                <div className="hidden items-center gap-2 md:flex">
+                  <button
+                    onClick={() => scrollCats(-1)}
+                    aria-label="Categorias anteriores"
+                    className="flex size-10 items-center justify-center rounded-full border border-border transition-colors hover:border-accent hover:text-accent"
+                  >
+                    <ChevronLeft className="h-5 w-5" strokeWidth={2} />
+                  </button>
+                  <button
+                    onClick={() => scrollCats(1)}
+                    aria-label="Próximas categorias"
+                    className="flex size-10 items-center justify-center rounded-full border border-border transition-colors hover:border-accent hover:text-accent"
+                  >
+                    <ChevronRight className="h-5 w-5" strokeWidth={2} />
+                  </button>
+                </div>
+              </div>
+
+              {/* Trilha horizontal com scroll/deslizar — compatível com touch mobile */}
+              <div className="relative">
+                <div
+                  ref={catRailRef}
+                  className="flex gap-5 overflow-x-auto pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                  style={{ WebkitOverflowScrolling: 'touch' } as React.CSSProperties}
+                >
+                  {categories.map((c, i) => (
+                    <motion.button
+                      key={c.id}
+                      initial={{ opacity: 0, y: 10 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.35, delay: i * 0.04 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => nav({ view: 'shop', category: c.slug })}
+                      className="group flex w-28 shrink-0 flex-col items-center gap-3 sm:w-32 md:w-36"
+                    >
+                      <span className="relative size-28 shrink-0 overflow-hidden rounded-full border border-border bg-muted transition-all duration-300 group-hover:scale-[1.04] group-hover:border-accent group-hover:shadow-[0_14px_30px_-12px_rgba(219,39,119,0.4)] sm:size-32 md:size-36">
+                        {c.image ? (
+                          <img
+                            src={c.image}
+                            alt={c.name}
+                            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                            loading="lazy"
+                            draggable={false}
+                          />
+                        ) : (
+                          <span className="flex h-full items-center justify-center text-2xl font-bold text-accent">
+                            {c.name.charAt(0)}
+                          </span>
+                        )}
+                        <span className="absolute inset-0 rounded-full ring-1 ring-inset ring-black/5" />
+                      </span>
+                      <span className="text-sm font-semibold tracking-tight text-foreground transition-colors group-hover:text-accent">
+                        {c.name}
+                      </span>
+                    </motion.button>
+                  ))}
+                </div>
+                {/* Fade nas bordas indicando que dá pra arrastar */}
+                <div className="pointer-events-none absolute right-0 top-0 bottom-3 w-10 bg-gradient-to-l from-background to-transparent" />
+              </div>
+            </section>
+          )}
+
           {/* CTA buttons abaixo do card */}
           <motion.div
             initial={{ opacity: 0, y: 16 }}
@@ -214,83 +291,6 @@ export function HomeView({
           </motion.div>
         </div>
       </section>
-
-      {/* ───────────────────────── CATEGORIAS (círculos, scroll horizontal) ───────────────────────── */}
-      {categories.length > 0 && (
-        <section className="container-lenora py-14 md:py-16">
-          <div className="mb-6 flex items-end justify-between gap-4">
-            <div className="flex flex-col gap-1">
-              <span className="text-[11px] font-semibold uppercase tracking-[0.25em] text-accent">
-                Coleções
-              </span>
-              <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-                Compre por categoria
-              </h2>
-            </div>
-            {/* Setas de navegação (desktop) */}
-            <div className="hidden items-center gap-2 md:flex">
-              <button
-                onClick={() => scrollCats(-1)}
-                aria-label="Categorias anteriores"
-                className="flex size-10 items-center justify-center rounded-full border border-border transition-colors hover:border-accent hover:text-accent"
-              >
-                <ChevronLeft className="h-5 w-5" strokeWidth={2} />
-              </button>
-              <button
-                onClick={() => scrollCats(1)}
-                aria-label="Próximas categorias"
-                className="flex size-10 items-center justify-center rounded-full border border-border transition-colors hover:border-accent hover:text-accent"
-              >
-                <ChevronRight className="h-5 w-5" strokeWidth={2} />
-              </button>
-            </div>
-          </div>
-
-          {/* Trilha horizontal com scroll/deslizar — compatível com touch mobile */}
-          <div className="relative">
-            <div
-              ref={catRailRef}
-              className="flex gap-5 overflow-x-auto pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-              style={{ WebkitOverflowScrolling: 'touch' } as React.CSSProperties}
-            >
-              {categories.map((c, i) => (
-                <motion.button
-                  key={c.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.35, delay: i * 0.04 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => nav({ view: 'shop', category: c.slug })}
-                  className="group flex w-28 shrink-0 flex-col items-center gap-3 sm:w-32 md:w-36"
-                >
-                  <span className="relative size-28 shrink-0 overflow-hidden rounded-full border border-border bg-muted transition-all duration-300 group-hover:scale-[1.04] group-hover:border-accent group-hover:shadow-[0_14px_30px_-12px_rgba(219,39,119,0.4)] sm:size-32 md:size-36">
-                    {c.image ? (
-                      <img
-                        src={c.image}
-                        alt={c.name}
-                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
-                        loading="lazy"
-                        draggable={false}
-                      />
-                    ) : (
-                      <span className="flex h-full items-center justify-center text-2xl font-bold text-accent">
-                        {c.name.charAt(0)}
-                      </span>
-                    )}
-                    <span className="absolute inset-0 rounded-full ring-1 ring-inset ring-black/5" />
-                  </span>
-                  <span className="text-sm font-semibold tracking-tight text-foreground transition-colors group-hover:text-accent">
-                    {c.name}
-                  </span>
-                </motion.button>
-              ))}
-            </div>
-            {/* Fade nas bordas indicando que dá pra arrastar */}
-            <div className="pointer-events-none absolute right-0 top-0 bottom-3 w-10 bg-gradient-to-l from-background to-transparent" />
-          </div>
-        </section>
-      )}
 
       {/* ───────────────────────── PRODUTOS EM DESTAQUE ───────────────────────── */}
       {featured.length > 0 && (

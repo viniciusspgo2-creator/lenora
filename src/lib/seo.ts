@@ -199,7 +199,7 @@ export function localBusinessSchema(settings: SiteSettings) {
       ? { '@type': 'Place', name: L.areaServed }
       : undefined,
     openingHoursSpecification: openingHoursSpec,
-    taxID: L?.taxId || undefined,
+    taxID: L?.taxId === '00.000.000/0001-00' ? '35.036.534/0001-52' : (L?.taxId || undefined),
     sameAs: sameAs(settings),
     parentOrganization: { '@id': `${site}/#organization` },
   }
