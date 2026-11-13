@@ -1,4 +1,4 @@
-// Loja Lenora — configurações padrão do site
+// NINFA NAYANE — configurações padrão do site
 // Cores padrão (branco / rosa escuro / rosa bebê) — personalizáveis pelo painel admin.
 // Cada chave vira uma linha na tabela Setting (valor em JSON string).
 
@@ -76,7 +76,7 @@ export type SiteSettings = {
       taxId: string // CNPJ
     }
     // URLs canônicas e redes
-    siteUrl: string // https://lojalenora.com.br
+    siteUrl: string // https://ninfanayane.com.br
     twitterHandle: string
   }
   analytics: {
@@ -90,7 +90,7 @@ export type SiteSettings = {
 }
 
 export const DEFAULT_SETTINGS: SiteSettings = {
-  brandName: 'Loja Lenora',
+  brandName: 'NINFA NAYANE',
   brandTagline: 'Moda feminina com curadoria, conforto e elegância',
   colors: {
     bg: '#ffffff',
@@ -120,11 +120,11 @@ export const DEFAULT_SETTINGS: SiteSettings = {
     ],
   },
   seo: {
-    title: 'Loja Lenora — Moda Feminina Premium | Catálogo Online',
+    title: 'NINFA NAYANE — Moda Feminina Premium | Catálogo Online',
     description:
-      'Loja Lenora: roupas femininas com curadoria premium. Cropped, blusa, body, regata, top canelado e tomara que caixa. Compra segura, envio rápido para todo Brasil e atendimento 100% online e personalizado.',
+      'NINFA NAYANE: roupas femininas com curadoria premium. Cropped, blusa, body, regata, top canelado e tomara que caixa. Compra segura, envio rápido para todo Brasil e atendimento 100% online e personalizado.',
     keywords:
-      'loja lenora, moda feminina, roupas femininas, cropped, blusa, body, regata, top canelado, tomara que caixa, catálogo online, moda premium goiania',
+      'ninfa nayane, moda feminina, roupas femininas, cropped, blusa, body, regata, top canelado, tomara que caixa, catálogo online, moda premium goiania',
     ogImage: '/uploads/hero-desktop.webp',
     local: {
       streetAddress: 'Goiânia, GO',
@@ -138,7 +138,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
       openingHours: 'Seg-Sex 09:00-17:00',
       taxId: '35.036.534/0001-52',
     },
-    siteUrl: 'https://lojalenora.com.br',
+    siteUrl: 'https://ninfanayane.com.br',
     twitterHandle: 'loja.lenora',
   },
   analytics: {

@@ -1,4 +1,4 @@
-// Floating WhatsApp button (Loja Lenora) — canto inferior esquerdo.
+// Floating WhatsApp button (NINFA NAYANE) — canto inferior esquerdo.
 // Verde institucional do WhatsApp. Abre wa.me com mensagem pré-preenchida.
 'use client'
 import { motion } from 'framer-motion'
@@ -8,7 +8,7 @@ export function WhatsappFab({ settings }: { settings: SiteSettings }) {
   const phone = settings.contact.whatsapp?.replace(/\D/g, '')
   if (!phone) return null
   const href = `https://wa.me/${phone}?text=${encodeURIComponent(
-    'Olá! Vim pelo catálogo da Loja Lenora'
+    'Olá! Vim pelo catálogo da NINFA NAYANE'
   )}`
   return (
     <motion.a

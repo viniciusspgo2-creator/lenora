@@ -60,6 +60,21 @@ export async function getSettings(): Promise<SiteSettings> {
     }
   }
   cache = rowsToSettings(rows)
+  // Rebranding aplicado em memória sem modificar as configurações salvas.
+  cache.brandName = 'NINFA NAYANE'
+  cache.seo = {
+    ...cache.seo,
+    title: cache.seo.title.replace(/Loja Lenora|LENORA|Lenora/g, 'NINFA NAYANE'),
+    description: cache.seo.description.replace(/Loja Lenora|LENORA|Lenora/g, 'NINFA NAYANE'),
+    keywords: cache.seo.keywords.replace(/loja lenora|Loja Lenora|LENORA|Lenora/gi, 'ninfa nayane'),
+    siteUrl: 'https://ninfanayane.com.br',
+    local: {
+      ...cache.seo.local,
+      taxId: cache.seo.local?.taxId === '00.000.000/0001-00'
+        ? '35.036.534/0001-52'
+        : cache.seo.local?.taxId,
+    },
+  }
   cacheTs = Date.now()
   return cache
 }

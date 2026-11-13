@@ -1,4 +1,4 @@
-// POST /api/chatbot — Lia, assistente da Loja Lenora.
+// POST /api/chatbot — Lia, assistente da NINFA NAYANE.
 // Usa z-ai-web-dev-sdk no backend (somente server-side).
 // A Lia conhece TODO o contexto da loja: contato, horário, envio, formas de
 // pagamento, políticas, categorias e o catálogo completo. Retorna
@@ -72,7 +72,7 @@ function buildStoreContext(catalog: CatalogItem[], settings: Awaited<ReturnType<
   })
 
   return `
-═══ INFORMAÇÕES DA LOJA LENORA ═══
+═══ INFORMAÇÕES DA LOJA NINFA NAYANE ═══
 Nome: ${settings.brandName}
 Slogan: ${settings.brandTagline}
 Atendimento: 100% online e personalizado
@@ -131,7 +131,7 @@ function fallback(message: string, catalog: CatalogItem[], settings: Awaited<Ret
   const phoneDisplay = `(${c.phone.slice(0, 2)}) ${c.phone.slice(2, 7)}-${c.phone.slice(7)}`
   if (matches.length === 0) {
     return {
-      reply: `Oi! Eu sou a Lia, assistente da Loja Lenora. 🌷 Não encontrei nada com "${message}" no catálogo agora. A loja trabalha com moda feminina (cropped, blusa, body, regata, top canelado, tomara que caixa). Atendimento das ${c.hours} pelo WhatsApp ${phoneDisplay}. Me conta o que você procura que eu te ajudo!`,
+      reply: `Oi! Eu sou a Lia, assistente da NINFA NAYANE. 🌷 Não encontrei nada com "${message}" no catálogo agora. A loja trabalha com moda feminina (cropped, blusa, body, regata, top canelado, tomara que caixa). Atendimento das ${c.hours} pelo WhatsApp ${phoneDisplay}. Me conta o que você procura que eu te ajudo!`,
       products: [],
     }
   }
@@ -156,7 +156,7 @@ export async function POST(req: NextRequest) {
     try {
       const ZAIMod = await import('z-ai-web-dev-sdk').then((m) => m.default ?? m)
       const zai = await ZAIMod.create()
-      const systemPrompt = `Você é a Lia, assistente virtual da Loja Lenora, uma loja de moda feminina (paleta branco, rosa e rosa-bebê).
+      const systemPrompt = `Você é a Lia, assistente virtual da NINFA NAYANE, uma loja de moda feminina (paleta branco, rosa e rosa-bebê).
 
 PERSONALIDADE:
 - Amigável, prestativa, direta e moderna. Sem enrolação.

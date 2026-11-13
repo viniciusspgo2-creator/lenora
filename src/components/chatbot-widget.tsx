@@ -1,4 +1,4 @@
-// Chatbot Widget (Loja Lenora) — Lia, assistente virtual.
+// Chatbot Widget (NINFA NAYANE) — Lia, assistente virtual.
 // Botão flutuante (canto inferior direito) + Popover com conversa.
 'use client'
 import { useEffect, useRef, useState } from 'react'
@@ -43,7 +43,7 @@ export function ChatbotWidget() {
         {
           role: 'assistant',
           text:
-            'Olá! Eu sou a Lia, sua assistente na Loja Lenora. 🌸 Posso te ajudar a encontrar peças, tirar dúvidas sobre tamanhos, envio e pagamento. Como posso ajudar?',
+            'Olá! Eu sou a Lia, sua assistente na NINFA NAYANE. 🌸 Posso te ajudar a encontrar peças, tirar dúvidas sobre tamanhos, envio e pagamento. Como posso ajudar?',
         },
       ])
     }
@@ -158,7 +158,7 @@ export function ChatbotWidget() {
                   <Sparkles className="h-4 w-4" />
                 </div>
                 <div>
-                  <p className="font-serif text-base leading-tight">Lia · Assistente Lenora</p>
+                  <p className="font-serif text-base leading-tight">Lia · Assistente NINFA NAYANE</p>
                   <p className="flex items-center gap-1 text-xs text-primary-foreground/70">
                     <span className="size-1.5 rounded-full bg-emerald-400" />
                     Online agora

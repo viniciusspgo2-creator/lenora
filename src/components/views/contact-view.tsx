@@ -1,4 +1,4 @@
-// ContactView (Loja Lenora) — página de contato com formulário que monta
+// ContactView (NINFA NAYANE) — página de contato com formulário que monta
 // uma mensagem e envia para o WhatsApp da loja.
 'use client'
 import { useState } from 'react'
@@ -58,7 +58,7 @@ export function ContactView({ settings }: Props) {
     }
     // Monta a mensagem do WhatsApp
     const lines = [
-      'Olá, Loja Lenora! 🌷',
+      'Olá, NINFA NAYANE! 🌷',
       '',
       `*Assunto:* ${subject}`,
       `*Nome:* ${name}`,

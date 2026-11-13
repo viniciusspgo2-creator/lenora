@@ -1,6 +1,6 @@
-// PoliciesView (Loja Lenora) — página long-form de políticas com sidebar
+// PoliciesView (NINFA NAYANE) — página long-form de políticas com sidebar
 // de navegação. Suporta emoji no título, parágrafos, listas de checagem e
-// CTA inline (WhatsApp). Conteúdo único e exclusivo da Loja Lenora.
+// CTA inline (WhatsApp). Conteúdo único e exclusivo da NINFA NAYANE.
 'use client'
 import { motion } from 'framer-motion'
 import { Check, MessageCircle } from 'lucide-react'
@@ -34,7 +34,7 @@ const POLICIES: Policy[] = [
     label: 'Trocas e Devoluções',
     title: 'Trocas e Devoluções',
     intro:
-      'Na Loja Lenora, queremos que você fique completamente satisfeita com suas compras 💖 Caso precise trocar um produto ou solicitar uma devolução, siga as orientações abaixo.',
+      'Na NINFA NAYANE, queremos que você fique completamente satisfeita com suas compras 💖 Caso precise trocar um produto ou solicitar uma devolução, siga as orientações abaixo.',
   },
   {
     slug: 'vendas',
@@ -55,14 +55,14 @@ const POLICIES: Policy[] = [
     label: 'Privacidade',
     title: 'Política de Privacidade',
     intro:
-      'A Loja Lenora respeita a sua privacidade e se compromete a proteger seus dados pessoais em conformidade com a LGPD (Lei nº 13.709/2018).',
+      'A NINFA NAYANE respeita a sua privacidade e se compromete a proteger seus dados pessoais em conformidade com a LGPD (Lei nº 13.709/2018).',
   },
   {
     slug: 'cookies',
     label: 'Cookies',
     title: 'Política de Cookies',
     intro:
-      'Esta política explica como a Loja Lenora utiliza cookies e tecnologias similares em seu site.',
+      'Esta política explica como a NINFA NAYANE utiliza cookies e tecnologias similares em seu site.',
   },
 ]
 
@@ -142,7 +142,7 @@ const SECTIONS: Record<string, Section[]> = {
     {
       emoji: '📑',
       h: 'Sobre os termos',
-      p: 'A Loja Lenora, pessoa jurídica de direito privado, estabelece neste documento as regras de uso do site lojalenora.com.br e demais plataformas operadas pela marca. Caso você não concorde com os termos, recomendamos que não utilize o site nem forneça seus dados.',
+      p: 'A NINFA NAYANE, pessoa jurídica de direito privado, estabelece neste documento as regras de uso do site ninfanayane.com.br e demais plataformas operadas pela marca. Caso você não concorde com os termos, recomendamos que não utilize o site nem forneça seus dados.',
     },
     {
       emoji: '🔃',
@@ -176,7 +176,7 @@ const SECTIONS: Record<string, Section[]> = {
     {
       emoji: '🗨️',
       h: 'Conteúdo da usuária',
-      p: 'Não é permitido publicar conteúdos ofensivos, ilegais ou que infrinjam direitos de terceiros. Ao publicar conteúdos, você concede à Loja Lenora o direito de uso, reprodução e divulgação sem restrições.',
+      p: 'Não é permitido publicar conteúdos ofensivos, ilegais ou que infrinjam direitos de terceiros. Ao publicar conteúdos, você concede à NINFA NAYANE o direito de uso, reprodução e divulgação sem restrições.',
     },
     {
       emoji: '⚙️',
@@ -186,7 +186,7 @@ const SECTIONS: Record<string, Section[]> = {
     {
       emoji: '🏷️',
       h: 'Propriedade intelectual',
-      p: 'Todos os conteúdos da Loja Lenora são protegidos por direitos autorais e não podem ser utilizados sem autorização.',
+      p: 'Todos os conteúdos da NINFA NAYANE são protegidos por direitos autorais e não podem ser utilizados sem autorização.',
     },
     {
       emoji: '⚡',
@@ -269,7 +269,7 @@ export function PoliciesView({ settings, policy }: Props) {
 
   // Mensagem pré-preenchida para a política de trocas
   const trocasMessage = encodeURIComponent(
-    'Olá, Loja Lenora! 💖 Gostaria de solicitar troca/devolução.\n\nVou informar os dados:\n• Número do pedido:\n• Nome completo:\n• CPF:\n• Motivo da troca ou devolução:'
+    'Olá, NINFA NAYANE! 💖 Gostaria de solicitar troca/devolução.\n\nVou informar os dados:\n• Número do pedido:\n• Nome completo:\n• CPF:\n• Motivo da troca ou devolução:'
   )
 
   return (

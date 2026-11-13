@@ -1,4 +1,4 @@
-// CartView (Loja Lenora) — página de carrinho completa com checkout via WhatsApp.
+// CartView (NINFA NAYANE) — página de carrinho completa com checkout via WhatsApp.
 'use client'
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -161,7 +161,7 @@ export function CartView({ settings }: Props) {
 
       // 2. Constrói a mensagem WhatsApp
       const lines: string[] = []
-      lines.push('🛍️ *Novo pedido — Loja Lenora*')
+      lines.push('🛍️ *Novo pedido — NINFA NAYANE*')
       lines.push(`Pedido: *${orderNumber}*`)
       lines.push('')
       lines.push('─'.repeat(20))
@@ -207,7 +207,7 @@ export function CartView({ settings }: Props) {
         '_blank',
         'noopener,noreferrer',
       )
-      toast.success('Pedido enviado! A Loja Lenora receberá no WhatsApp.')
+      toast.success('Pedido enviado! A NINFA NAYANE receberá no WhatsApp.')
       clear()
       setCustomer({ name: '', phone: '', email: '', cep: '', address: '' })
     } catch (e) {
@@ -565,7 +565,7 @@ export function CartView({ settings }: Props) {
           <div className="mt-4 flex flex-col gap-2 rounded-md border border-dashed border-border bg-background p-4 text-xs text-muted-foreground">
             <p className="flex items-center gap-2">
               <CheckCircle2 className="h-4 w-4 text-accent" />
-              Compra protegida — confirmação direta com a Loja Lenora.
+              Compra protegida — confirmação direta com a NINFA NAYANE.
             </p>
             <p className="flex items-center gap-2">
               <CheckCircle2 className="h-4 w-4 text-accent" />

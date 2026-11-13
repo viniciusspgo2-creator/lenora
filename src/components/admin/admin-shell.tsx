@@ -1,4 +1,4 @@
-// Loja Lenora — Admin Shell.
+// NINFA NAYANE — Admin Shell.
 // Layout: sidebar preta fixa (desktop) + bottom tab bar (mobile) + área de conteúdo.
 // Top bar: marca + "Voltar à loja" + "Sair".
 'use client'
@@ -120,7 +120,7 @@ export function AdminShell({
             className="flex items-center gap-2 transition hover:opacity-90"
           >
             <span className="font-serif text-2xl tracking-[0.18em]">
-              LENORA
+              NINFA NAYANE
             </span>
             <span className="size-1.5 rounded-full bg-accent" />
           </a>
@@ -183,7 +183,7 @@ export function AdminShell({
             </button>
             <div>
               <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
-                Painel · Lenora
+                Painel · NINFA NAYANE
               </p>
               <h1 className="font-serif text-xl leading-tight">
                 {activeLabel}
@@ -245,7 +245,7 @@ export function AdminShell({
           <aside className="absolute left-0 top-0 flex h-full w-[80%] max-w-xs flex-col bg-primary text-primary-foreground">
             <div className="flex h-16 items-center justify-between border-b border-white/10 px-5">
               <span className="font-serif text-2xl tracking-[0.18em]">
-                LENORA
+                NINFA NAYANE
               </span>
               <button
                 onClick={() => setMobileOpen(false)}
